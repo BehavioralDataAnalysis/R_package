@@ -18,6 +18,9 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
+** WORK IN PROGRESS! Please forgive the mess until the package is ready for release **
+
+
 The goal of BehavioralDataAnalysis is to provide functions to help you analyze behavioral data, i.e., data that represents the behavior of human beings such as customers and employees. In particular, I believe that there are two aspects of behavioral data that are worth emphasizing: 
 - it doesn't obey a normal distribution nearly as often as we assume. It can be asymmetrical (skewed), fat-tailed, kurtotic, present multiple peaks and what have you. 
 - we're generally interested in understanding what causes a behavior, so that we can affect it--e.g., increase customer spending or reduce employee churn. This requires the use of experimental or quasi-experimental methods, many of which make our data even less "well-behaved", statistically speaking. 
