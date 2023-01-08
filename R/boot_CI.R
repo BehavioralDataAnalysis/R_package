@@ -4,17 +4,19 @@
 #' @param fct function to run on the data
 #' @param B number of Bootstrap sampling iterations to run
 #' @param conf.level confidence interval percentage to use
+#' @param cores the number of cores to use for parallel processing
 #' @return a vector with two values, the lower and upper bounds of the confidence interval
-#' @importFrom doParallel, dplyr, foreach
+#' @import doParallel foreach dplyr parallel
 #' @examples
+#' options(mc.cores = 2)
 #' df1 <- data.frame(
 #' id = 1:6,
 #' x = c(1, 1.5, 5, 5.5, 10, 10.5),
 #' y = c(1, 1.5, 5, 5.5, 10, 10.5))
-#' boot_CI(df1, function(df) mean(df$x), B=100)
+#' boot_CI(df1, function(df) mean(df$x), cores = 2)
 #' @export
 
-boot_CI <- function(df, fct, B = 100, conf.level = 0.90){
+boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
   # Validating dependencies
   if (!requireNamespace("doParallel", quietly = TRUE)) {
     stop("Package \"doParallel\" must be installed to use this function.", call. = FALSE)}
@@ -28,12 +30,18 @@ boot_CI <- function(df, fct, B = 100, conf.level = 0.90){
   # Validating that the function returns a single-valued output
   if(suppressWarnings(is.na(fct(df)|length(fct(df))>1))) stop("the function doesn't return a single-valued, non-null output.")
 
-  #Calculating and validating the offset
+  # Calculating and validating the offset
   if(B * (1 - conf.level) / 2 < 1) stop("the number of Bootstrap simulations is too small in relation to the confidence level")
   offset = round(B * (1 - conf.level) / 2)
 
-  # Running the Bootstrap loop with foreach, and doParallel as backend
-  doParallel::registerDoParallel()
+  ### Running the Bootstrap loop with foreach, and doParallel as backend
+
+  # Detecting the number of cores if not provided by the user
+  if(missing(cores)){
+    cores <- parallel::detectCores() - 1
+  }
+  # Initializing the cluster
+  doParallel::registerDoParallel(cores = cores)
   boot_vec <- rep(NA, B)
   inner_df <- df
 

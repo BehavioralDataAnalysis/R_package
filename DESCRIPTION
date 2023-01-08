@@ -17,10 +17,11 @@ Config/testthat/edition: 3
 Imports: 
     doParallel,
     dplyr,
+    foreach,
     magrittr,
-    scales,
-    stats,
     Rcpp,
+    scales,
+    stats
 Depends: 
     R (>= 2.10)
 LinkingTo: Rcpp

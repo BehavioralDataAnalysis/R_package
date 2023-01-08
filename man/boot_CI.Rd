@@ -4,7 +4,7 @@
 \alias{boot_CI}
 \title{Creates a Bootstrap confidence interval for the output of a function}
 \usage{
-boot_CI(df, fct, B = 100, conf.level = 0.9)
+boot_CI(df, fct, B = 100, conf.level = 0.9, cores = 2)
 }
 \arguments{
 \item{df}{data to use}
@@ -14,6 +14,8 @@ boot_CI(df, fct, B = 100, conf.level = 0.9)
 \item{B}{number of Bootstrap sampling iterations to run}
 
 \item{conf.level}{confidence interval percentage to use}
+
+\item{cores}{the number of cores to use for parallel processing}
 }
 \value{
 a vector with two values, the lower and upper bounds of the confidence interval
@@ -22,9 +24,10 @@ a vector with two values, the lower and upper bounds of the confidence interval
 Creates a Bootstrap confidence interval for the output of a function
 }
 \examples{
+options(mc.cores = 2)
 df1 <- data.frame(
 id = 1:6,
 x = c(1, 1.5, 5, 5.5, 10, 10.5),
 y = c(1, 1.5, 5, 5.5, 10, 10.5))
-boot_CI(df1, function(df) mean(df$x), B=100)
+boot_CI(df1, function(df) mean(df$x), cores = 2)
 }
