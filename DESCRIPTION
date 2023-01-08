@@ -15,11 +15,12 @@ Suggests:
 RoxygenNote: 7.2.3
 Config/testthat/edition: 3
 Imports: 
+    doParallel,
     dplyr,
     magrittr,
     scales,
     stats,
-    Rcpp
+    Rcpp,
 Depends: 
     R (>= 2.10)
 LinkingTo: Rcpp
