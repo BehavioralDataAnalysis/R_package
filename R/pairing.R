@@ -15,11 +15,48 @@
 
 pairing <- function(df, id, n.groups = 2){
 
+  # Running checks and getting distance matrix from auxiliary function
+  d_mat <- checks_and_preps_dmat(df = df, id = id)
+
+  # Setting parameters for the matching
+  N <- nrow(df)
+  pairs_lst_lim <- floor(N/n.groups)
+  nb_matches_needed <- n.groups - 1 # Number of matches we want to find for each row
+
+  available <- 1:N
+  pairs_lst <- list()
+
+  # Apply argpartsort to each column until enough matches have been found
+  for(c in 1:N){ # Iterating through the columns
+    if(length(pairs_lst) == pairs_lst_lim) { break } # Exiting the loop if we have enough pairs already
+    if(!(c %in% available)){ next } # Going to next iteration of the loop if the subject c is not available anymore
+    for(search_lim in nb_matches_needed:N){
+      closest_candidates <- argpartsort(d_mat[,c], search_lim)
+      matches <- intersect(available, closest_candidates)
+      if(length(matches) == nb_matches_needed){
+        pair <- list(append(matches, c)) # Adding the subject c to its list of matches to form a pair
+        pairs_lst <- append(pairs_lst, pair)
+        available <- setdiff(available, unlist(pair))
+        break
+      } else if(length(matches) > nb_matches_needed){
+        # Resolving ties
+      }
+      # Otherwise, redo the loop for search_lim += 1
+    }
+  }
+  return(pairs_lst)
+}
+
+##### Auxiliary functions #####
+checks_and_preps_dmat <- function(df, id){
+
+  N <- nrow(df)
+
   # Early input validation
-  if(nrow(df) == 0 | ncol(df) == 0) stop("the data provided is empty")
+  if(N == 0 | ncol(df) == 0) stop("the data provided is empty")
 
   #Stopping if there are NA values
-  if(nrow(df %>% stats::na.omit()) != nrow(df)) stop("please address NA values before using this function")
+  if(nrow(df %>% stats::na.omit()) != N) stop("please address NA values before using this function")
 
   #Isolating the identification variable
   if(!(id %in% colnames(df))) stop("the id string doesn't match any column name")
@@ -53,41 +90,15 @@ pairing <- function(df, id, n.groups = 2){
     normalized_vars <- normalized_vars %>% cbind(normalized_cat_vars)
   }
 
-  # Setting parameters for the matching
-  N <- nrow(df)
-  pairs_lst_lim <- floor(N/n.groups)
-  nb_matches_needed <- n.groups - 1 # Number of matches we want to find for each row
-
   #Calculating distance matrix
   d_mat <- normalized_vars %>%
     stats::dist(method = 'euclidean', diag = TRUE, upper = TRUE) %>%
     as.matrix()
   diag(d_mat) <- N + 1
 
-  available <- 1:N
-  pairs_lst <- list()
-  # Apply argpartsort to each column until enough matches have been found
-  for(c in 1:N){ # Iterating through the columns
-    if(length(pairs_lst) == pairs_lst_lim) { break } # Exiting the loop if we have enough pairs already
-    if(!(c %in% available)){ next } # Going to next iteration of the loop if the subject c is not available anymore
-    for(search_lim in nb_matches_needed:N){
-      closest_candidates <- argpartsort(d_mat[,c], search_lim)
-      matches <- intersect(available, closest_candidates)
-      if(length(matches) == nb_matches_needed){
-        pair <- list(append(matches, c)) # Adding the subject c to its list of matches to form a pair
-        pairs_lst <- append(pairs_lst, pair)
-        available <- setdiff(available, unlist(pair))
-        break
-      } else if(length(matches) > nb_matches_needed){
-        # Resolving ties
-      }
-      # Otherwise, redo the loop for search_lim += 1
-    }
-  }
-  return(pairs_lst)
+  return(d_mat)
 }
 
-##### Auxiliary functions #####
 argpartsort <- function(vec, n){
   # Returns the indices of the n smallest values
   return(order(vec)[1:n])
