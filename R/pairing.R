@@ -4,6 +4,8 @@
 #' @param id column(s) used for identification
 #' @param n.groups number of groups
 #' @return a list of pairs, each having n.groups elements
+#' @import dplyr
+#' @importFrom methods is
 #' @examples
 #' df1 <- data.frame(
 #' id = 1:6,
@@ -99,9 +101,40 @@ checks_and_preps_dmat <- function(df, id){
   return(d_mat)
 }
 
-argpartsort <- function(vec, n){
-  # Returns the indices of the n smallest values
-  return(order(vec)[1:n])
+
+
+
+#' Returns the indices of the n-smallest values in a vector
+#'
+#' @param dat A vector or a matrix
+#' @param n the number of indices to return
+#'
+#' @return a vector of integers (for a vector input) or a matrix (for a matrix input)
+#' @export
+#'
+#' @examples
+#' # input data is a vector
+#' vec <- c(20, 10, 30, 60, 50, 40)
+#' argpartsort(vec, 3)
+#'
+#' # input data is a matrix
+#' mat <- matrix(data = c(20, 10, 30, 60, 50, 40, 40, 20, 10, 30, 60, 50), ncol = 2)
+#' argpartsort(mat, 2)
+argpartsort <- function(dat, n){
+
+
+  # Input validation
+  if(!is(n, 'numeric')) stop("the number of values to return is not an integer")
+  if(n <= 0) stop("the number of values to return is not positive")
+
+  if(is(dat, 'vector')){
+    # Returns the indices of the n smallest values
+    return(order(dat)[1:n])
+  } else if(is(dat, 'matrix')) {
+    # Returns the indices of the n smallest values for each column
+    ordered_mat <- apply(dat, 2, function(x) order(x)[1:n])
+    return(ordered_mat)
+  }
 }
 
 # Normalizing all the numeric vectors in matching_vars
