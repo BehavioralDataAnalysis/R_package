@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 
-[![check-release](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-release.yaml/badge.svg)](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-release.yaml)
+[![check-standard](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-standard.yaml)
 <!-- badges: end -->
 
 \*\* WORK IN PROGRESS! Please forgive the mess until the package is
