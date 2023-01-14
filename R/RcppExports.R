@@ -5,3 +5,7 @@ cpp_argpartsort <- function(x, n) {
     .Call(`_BehavioralDataAnalysis_cpp_argpartsort`, x, n)
 }
 
+n_smallest_indices <- function(vec, n) {
+    .Call(`_BehavioralDataAnalysis_n_smallest_indices`, vec, n)
+}
+

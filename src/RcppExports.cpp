@@ -22,9 +22,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// n_smallest_indices
+std::vector<int> n_smallest_indices(const std::vector<int>& vec, int n);
+RcppExport SEXP _BehavioralDataAnalysis_n_smallest_indices(SEXP vecSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<int>& >::type vec(vecSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(n_smallest_indices(vec, n));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BehavioralDataAnalysis_cpp_argpartsort", (DL_FUNC) &_BehavioralDataAnalysis_cpp_argpartsort, 2},
+    {"_BehavioralDataAnalysis_n_smallest_indices", (DL_FUNC) &_BehavioralDataAnalysis_n_smallest_indices, 2},
     {NULL, NULL, 0}
 };
 
