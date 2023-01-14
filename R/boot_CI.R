@@ -36,6 +36,8 @@ boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
 
   ### Running the Bootstrap loop with foreach, and doParallel as backend
 
+  ### TODO: use method with lower computational fixed cost for small data
+
   # Detecting the number of cores if not provided by the user
   if(missing(cores)){
     cores <- parallel::detectCores() - 1
