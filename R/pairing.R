@@ -22,31 +22,41 @@ pairing <- function(df, id, n.groups = 2){
 
   # Setting parameters for the matching
   N <- nrow(df)
-  pairs_lst_lim <- floor(N/n.groups)
+  pairs_mat_lim <- floor(N/n.groups)
   nb_matches_needed <- n.groups - 1 # Number of matches we want to find for each row
 
   available <- 1:N
-  pairs_lst <- list()
+  pairs_mat <- matrix(integer(), nrow = pairs_mat_lim, ncol = n.groups)
+  nb_pairs <- 0L
 
-  # Apply argpartsort to each column until enough matches have been found
+  # Apply argpartsort to each column of d_mat until enough matches have been found
   for(c in 1:N){ # Iterating through the columns
-    if(length(pairs_lst) == pairs_lst_lim) { break } # Exiting the loop if we have enough pairs already
-    if(!(c %in% available)){ next } # Going to next iteration of the loop if the subject c is not available anymore
+    if(!(c %in% available)) { next } # Going to next iteration of the loop if the subject c is not available anymore
+    if(length(available) < n.groups) { break } # Exiting the loop if we have gone through enough of the data
     for(search_lim in nb_matches_needed:N){
       closest_candidates <- argpartsort(d_mat[,c], search_lim)
       matches <- intersect(available, closest_candidates)
       if(length(matches) == nb_matches_needed){
-        pair <- list(append(matches, c)) # Adding the subject c to its list of matches to form a pair
-        pairs_lst <- append(pairs_lst, pair)
-        available <- setdiff(available, unlist(pair))
+        pair <- append(matches, c) # Adding the subject c to its matches to form a pair
+        nb_pairs <- nb_pairs + 1
+        pairs_mat[nb_pairs,] <- pair
+        available <- setdiff(available, pair)
         break
       } else if(length(matches) > nb_matches_needed){
-        # Resolving ties
+        # TODO: Resolve ties
       }
       # Otherwise, redo the loop for search_lim += 1
     }
   }
-  return(pairs_lst)
+
+  # Map the indices to values in the original data if necessary
+  id_vec <- df[[id]]
+  if(!identical(id_vec, 1:N)){
+    pairs_mat <- matrix(sapply(pairs_mat, function(x) id_vec[x]),
+                        byrow = TRUE,
+                        ncol = n.groups)
+  }
+  return(pairs_mat)
 }
 
 ##### Auxiliary functions #####
@@ -104,7 +114,7 @@ checks_and_preps_dmat <- function(df, id){
 
 
 
-#' Returns the indices of the n-smallest values in a vector
+#' Returns the indices of the n-smallest values in a vector, or in each column of a matrix
 #'
 #' @param dat A vector or a matrix
 #' @param n the number of indices to return

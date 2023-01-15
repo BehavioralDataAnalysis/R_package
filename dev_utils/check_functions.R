@@ -10,3 +10,6 @@ Sys.setenv("--_R_CHECK_LIMIT_CORES_" = FALSE)
 check(restore_output = TRUE)
 
 
+# Checking only the examples for a function
+devtools::check_examples()
+

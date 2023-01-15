@@ -15,18 +15,17 @@
 strat_assign <- function(df, id, n.groups = 2){
 
   # Generating the matched pairs
-  pairs_list <- pairing(df, id = id, n.groups = n.groups)
+  pairs_mat <- pairing(df, id = id, n.groups = n.groups)
 
   # Assigning experimental groups to the matched pairs
-  N_pairs <- length(pairs_list)
-  assgnmt <- lapply(1:N_pairs, function(x) list(0,1))
-  assgnmt <- lapply(assgnmt, function(x) sample(x))
-  assgnmt <- unlist(assgnmt)
-  pairs_list <- unlist(pairs_list)
+  N_pairs <- nrow(pairs_mat)
+  assgnmt <- matrix(0, nrow = N_pairs, ncol = n.groups)
+  assgnmt[,1] <- 1
+  shuffled_assgnmt <- t(apply(assgnmt, 1, sample))
 
   pairs_df <- data.frame(
-    id = pairs_list,
-    grp = assgnmt
+    id = c(pairs_mat),
+    grp = c(shuffled_assgnmt)
   )
   pairs_df <- pairs_df[order(pairs_df$id),]
 
