@@ -7,7 +7,7 @@ Maintainer: Florent <florent.buisson.oreilly@maskedmails.com>
 Description: Based on the book Behavioral Data Analysis With R and Python.
     It provides robust functions to analyze behavioral data without relying
     on traditional statistics.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
@@ -19,6 +19,7 @@ Imports:
     dplyr,
     foreach,
     magrittr,
+    methods,
     Rcpp,
     scales,
     stats
