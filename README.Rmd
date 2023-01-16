@@ -16,8 +16,8 @@ knitr::opts_chunk$set(
 # BehavioralDataAnalysis
 
 <!-- badges: start -->
-[![check-release](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-release.yaml/badge.svg)](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-release.yaml)
 [![Codecov test coverage](https://codecov.io/gh/BehavioralDataAnalysis/R_package/branch/main/graph/badge.svg)](https://app.codecov.io/gh/BehavioralDataAnalysis/R_package?branch=main)
+[![check-standard](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-standard.yaml)
 <!-- badges: end -->
 
 ** WORK IN PROGRESS! Please forgive the mess until the package is ready for release **
