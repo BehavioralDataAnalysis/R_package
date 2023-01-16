@@ -46,7 +46,7 @@ The function that you're most likely to use is probably `boot_CI()`, which estim
 
 At the moment, you need to pass to `boot_CI()` a single-valued function (i.e., a function that returns a single number instead of, for instance, all the parameters of a regression), as demonstrated below. In the future, I'm planning to have it accept a regression formula as well, to reduce some boilerplate code.
 
-```{r example}
+```{r}
 library(BehavioralDataAnalysis)
 data(starwars, package = "dplyr")
 
@@ -57,14 +57,14 @@ reg_fun <- function(dat){
   return(coeff)
 }
 CI <- boot_CI(starwars, reg_fun, cores = 2)
-CI
+print(CI)
 ```
 
 ### matching subject for experimentation
 
 If you have access to your whole list of subjects ahead of time (e.g., as opposed to users visiting at random your website), you can pair subjects sharing similar characteristics, to ensure that your experimental groups are as balanced as possible. This is also called stratified assignment, hence the name of the function `strat_assign()`. Note however that it will make traditional statistics invalid, and you'll have to use the Bootstrap to build intervals around your central estimates. 
 
-```{r example, warnings=FALSE}
+```{r, message=FALSE, warning=FALSE}
 library(dplyr)
 library(BehavioralDataAnalysis)
 attach(starwars)

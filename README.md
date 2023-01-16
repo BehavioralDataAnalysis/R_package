@@ -5,7 +5,9 @@
 
 <!-- badges: start -->
 
-[![check-standard](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-standard.yaml)
+[![check-release](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-release.yaml/badge.svg)](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-release.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/BehavioralDataAnalysis/R_package/branch/main/graph/badge.svg)](https://app.codecov.io/gh/BehavioralDataAnalysis/R_package?branch=main)
 <!-- badges: end -->
 
 \*\* WORK IN PROGRESS! Please forgive the mess until the package is
@@ -41,11 +43,88 @@ You can install the development version of BehavioralDataAnalysis from
 devtools::install_github("BehavioralDataAnalysis/R_package")
 ```
 
-## Example
+## Examples
 
-This is a basic example which shows you how to solve a common problem:
+### Bootstrap confidence interval
+
+The function that you’re most likely to use is probably `boot_CI()`,
+which estimates a Bootstrap interval for a function applied to a
+dataset. While the `boot.ci()` function of the [boot
+package]('https://cran.r-project.org/web/packages/boot/index.html')
+offers more options and is more powerful, it often requires more memory
+and computation than my personal laptop can manage and I find it
+somewhat cumbersome to use. Definitely check it out if you need a more
+serious implementation than the one here!
+
+At the moment, you need to pass to `boot_CI()` a single-valued function
+(i.e., a function that returns a single number instead of, for instance,
+all the parameters of a regression), as demonstrated below. In the
+future, I’m planning to have it accept a regression formula as well, to
+reduce some boilerplate code.
 
 ``` r
 library(BehavioralDataAnalysis)
-## basic example code
+data(starwars, package = "dplyr")
+
+reg_fun <- function(dat){
+  formula <- 'height~mass'
+  mod <- lm(formula, data = dat)
+  coeff <- as.numeric(mod$coefficients['mass'])
+  return(coeff)
+}
+CI <- boot_CI(starwars, reg_fun, cores = 2)
+print(CI)
+#> [1] 0.005195295 1.106952391
+```
+
+### matching subject for experimentation
+
+If you have access to your whole list of subjects ahead of time (e.g.,
+as opposed to users visiting at random your website), you can pair
+subjects sharing similar characteristics, to ensure that your
+experimental groups are as balanced as possible. This is also called
+stratified assignment, hence the name of the function `strat_assign()`.
+Note however that it will make traditional statistics invalid, and
+you’ll have to use the Bootstrap to build intervals around your central
+estimates.
+
+``` r
+library(dplyr)
+library(BehavioralDataAnalysis)
+attach(starwars)
+set.seed(1)
+dat <- starwars %>%
+  na.omit() %>%
+  select(-films, -vehicles, -starships) %>%
+  filter(!grepl('Dooku', name))
+
+strat_assigned_dat <- strat_assign(dat, id = 'name')
+summ <- strat_assigned_dat %>% 
+  group_by(grp) %>% 
+  summarize(mean_height = mean(height, na.rm = TRUE))
+print(summ)
+#> # A tibble: 2 × 2
+#>     grp mean_height
+#>   <dbl>       <dbl>
+#> 1     0        175.
+#> 2     1        180.
+```
+
+As we can see, the mean heights of the two groups are pretty close.
+Let’s see what it looks like with pure randomization for reference:
+
+``` r
+set.seed(1)
+rnd_dat <- dat %>%
+  mutate(grp = c(rep(0, 14), rep(1, 14))) %>%
+  mutate(grp = sample(grp))
+rnd_summ <- rnd_dat %>% 
+  group_by(grp) %>% 
+  summarize(mean_height = mean(height, na.rm = TRUE))
+print(rnd_summ)
+#> # A tibble: 2 × 2
+#>     grp mean_height
+#>   <dbl>       <dbl>
+#> 1     0        171.
+#> 2     1        184.
 ```
