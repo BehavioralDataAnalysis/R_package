@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![check-release](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-release.yaml/badge.svg)](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-release.yaml)
+[![Codecov test coverage](https://codecov.io/gh/BehavioralDataAnalysis/R_package/branch/main/graph/badge.svg)](https://app.codecov.io/gh/BehavioralDataAnalysis/R_package?branch=main)
 <!-- badges: end -->
 
 ** WORK IN PROGRESS! Please forgive the mess until the package is ready for release **
@@ -63,18 +64,38 @@ CI
 
 If you have access to your whole list of subjects ahead of time (e.g., as opposed to users visiting at random your website), you can pair subjects sharing similar characteristics, to ensure that your experimental groups are as balanced as possible. This is also called stratified assignment, hence the name of the function `strat_assign()`. Note however that it will make traditional statistics invalid, and you'll have to use the Bootstrap to build intervals around your central estimates. 
 
-```{r example, warning=FALSE}
+```{r example, warnings=FALSE}
 library(dplyr)
 library(BehavioralDataAnalysis)
 attach(starwars)
+set.seed(1)
 dat <- starwars %>%
   na.omit() %>%
-  select(-films, -vehicles, -starships)
+  select(-films, -vehicles, -starships) %>%
+  filter(!grepl('Dooku', name))
 
 strat_assigned_dat <- strat_assign(dat, id = 'name')
-strat_assigned_dat %>% 
-  group_by('group') %>% 
+summ <- strat_assigned_dat %>% 
+  group_by(grp) %>% 
   summarize(mean_height = mean(height, na.rm = TRUE))
+print(summ)
 
 ```
+
+As we can see, the mean heights of the two groups are pretty close. Let's see what it looks like with pure randomization for reference:
+
+```{r}
+set.seed(1)
+rnd_dat <- dat %>%
+  mutate(grp = c(rep(0, 14), rep(1, 14))) %>%
+  mutate(grp = sample(grp))
+rnd_summ <- rnd_dat %>% 
+  group_by(grp) %>% 
+  summarize(mean_height = mean(height, na.rm = TRUE))
+print(rnd_summ)
+
+```
+
+
+
 
