@@ -37,11 +37,44 @@ You can install the development version of BehavioralDataAnalysis from [GitHub](
 devtools::install_github("BehavioralDataAnalysis/R_package")
 ```
 
-## Example
+## Examples
 
-This is a basic example which shows you how to solve a common problem:
+### Bootstrap confidence interval
+
+The function that you're most likely to use is probably `boot_CI()`, which estimates a Bootstrap interval for a function applied to a dataset. While the `boot.ci()` function of the [boot package]('https://cran.r-project.org/web/packages/boot/index.html') offers more options and is more powerful, it often requires more memory and computation than my personal laptop can manage and I find it somewhat cumbersome to use. Definitely check it out if you need a more serious implementation than the one here!
+
+At the moment, you need to pass to `boot_CI()` a single-valued function (i.e., a function that returns a single number instead of, for instance, all the parameters of a regression), as demonstrated below. In the future, I'm planning to have it accept a regression formula as well, to reduce some boilerplate code.
 
 ```{r example}
 library(BehavioralDataAnalysis)
-## basic example code
+data(starwars, package = "dplyr")
+
+reg_fun <- function(dat){
+  formula <- 'height~mass'
+  mod <- lm(formula, data = dat)
+  coeff <- as.numeric(mod$coefficients['mass'])
+  return(coeff)
+}
+CI <- boot_CI(starwars, reg_fun, cores = 2)
+CI
 ```
+
+### matching subject for experimentation
+
+If you have access to your whole list of subjects ahead of time (e.g., as opposed to users visiting at random your website), you can pair subjects sharing similar characteristics, to ensure that your experimental groups are as balanced as possible. This is also called stratified assignment, hence the name of the function `strat_assign()`. Note however that it will make traditional statistics invalid, and you'll have to use the Bootstrap to build intervals around your central estimates. 
+
+```{r example, warning=FALSE}
+library(dplyr)
+library(BehavioralDataAnalysis)
+attach(starwars)
+dat <- starwars %>%
+  na.omit() %>%
+  select(-films, -vehicles, -starships)
+
+strat_assigned_dat <- strat_assign(dat, id = 'name')
+strat_assigned_dat %>% 
+  group_by('group') %>% 
+  summarize(mean_height = mean(height, na.rm = TRUE))
+
+```
+

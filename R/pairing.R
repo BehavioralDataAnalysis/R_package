@@ -53,7 +53,6 @@ pairing <- function(df, id, n.groups = 2){
   id_vec <- df[[id]]
   if(!identical(id_vec, 1:N)){
     pairs_mat <- matrix(sapply(pairs_mat, function(x) id_vec[x]),
-                        byrow = TRUE,
                         ncol = n.groups)
   }
   return(pairs_mat)

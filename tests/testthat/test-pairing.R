@@ -34,4 +34,10 @@ test_that("pairing works with categorical data", {
 
 ### Tests with character/factor id column
 
+test_that("pairing works with character id", {
+  df1 <- data.frame(id = c('a', 'b', 'c', 'd', 'e', 'f'),
+                    x = c(1, 1.5, 5, 5.5, 10, 10.5),
+                    y = c(1, 1.5, 5, 5.5, 10, 10.5))
+  expect_identical(pairing(df1, 'id'), matrix(data = c('b', 'a', 'd', 'c', 'f', 'e'), nrow = 3, byrow = TRUE))
+})
 
