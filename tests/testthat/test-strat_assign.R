@@ -21,3 +21,35 @@ test_that("stratified assignment works with character data", {
   expect_equal(sum(strat_df[3:4, 'grp']), 1)
   expect_equal(sum(strat_df[5:6, 'grp']), 1)
 })
+
+test_that("stratified assignment works with character id", {
+  df <- data.frame(id = c('a', 'b', 'c', 'd', 'e', 'f'),
+                    x = c(1, 1.5, 5, 5.5, 10, 10.5),
+                    y = c(1, 1.5, 5, 5.5, 10, 10.5))
+  strat_df <- strat_assign(df, id = 'id')
+  expect_equal(sum(strat_df[1:2, 'grp']), 1)
+  expect_equal(sum(strat_df[3:4, 'grp']), 1)
+  expect_equal(sum(strat_df[5:6, 'grp']), 1)
+})
+
+### Tests with character/factor id column
+
+test_that("stratified assignment works with character id", {
+  df <- data.frame(id = c('a', 'b', 'c', 'd', 'e', 'f'),
+                    x = c(1, 1.5, 5, 5.5, 10, 10.5),
+                    y = c(1, 1.5, 5, 5.5, 10, 10.5))
+  strat_df <- strat_assign(df, id = 'id')
+  expect_equal(sum(strat_df[1:2, 'grp']), 1)
+  expect_equal(sum(strat_df[3:4, 'grp']), 1)
+  expect_equal(sum(strat_df[5:6, 'grp']), 1)
+})
+
+test_that("stratified assignment works with starwars data", {
+  starwars_df <- setup_test('starwars')
+  strat_df <- strat_assign(starwars_df, id = 'name')
+  skywalkers <- strat_df %>%
+    filter(grepl('Skywalker', name)) %>%
+    select(grp)
+  expect_equal(sum(skywalkers), 1)
+
+})

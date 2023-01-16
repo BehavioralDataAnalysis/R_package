@@ -27,9 +27,11 @@ strat_assign <- function(df, id, n.groups = 2){
     id = c(pairs_mat),
     grp = c(shuffled_assgnmt)
   )
-  pairs_df <- pairs_df[order(pairs_df$id),]
 
-  df_out <- merge(df, pairs_df, by='id')
+  # Replacing 'id' by the correct value
+  colnames(pairs_df) <- c(eval(id), 'grp')
+
+  df_out <- merge(df, pairs_df, by=id)
 
   return(df_out)
 }

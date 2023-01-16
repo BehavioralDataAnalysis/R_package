@@ -41,3 +41,11 @@ test_that("pairing works with character id", {
   expect_identical(pairing(df1, 'id'), matrix(data = c('b', 'a', 'd', 'c', 'f', 'e'), nrow = 3, byrow = TRUE))
 })
 
+
+
+test_that("pairing works with starwars data", {
+  starwars_df <- setup_test('starwars')
+  sw_pairs <- pairing(starwars_df, id = 'name')
+  expect_identical(sw_pairs[1,], c("Anakin Skywalker", "Luke Skywalker"))
+})
+
