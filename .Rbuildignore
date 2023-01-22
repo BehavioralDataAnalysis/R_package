@@ -4,3 +4,4 @@
 ^\.Rproj\.user$
 ^\.github$
 ^dev_utils$
+^codemeta\.json$
