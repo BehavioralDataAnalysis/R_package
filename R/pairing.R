@@ -43,7 +43,9 @@ pairing <- function(df, id, n.groups = 2){
         available <- setdiff(available, pair)
         break
       } else if(length(matches) > nb_matches_needed){
-        # TODO: Resolve ties
+        # Resolving ties: suboptimal implementation until required by c++ code
+        warning("The ELSE IF branch in pairing() was reached. Time to write a better tie-breaking code")
+        matches <- matches[1:nb_matches_needed]
       }
       # Otherwise, redo the loop for search_lim += 1
     }
