@@ -17,9 +17,6 @@
 #' @export
 
 boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
-  # Validating dependencies
-  if (!requireNamespace("doParallel", quietly = TRUE)) {
-    stop("Package \"doParallel\" must be installed to use this function.", call. = FALSE)}
 
   #Validating the inputs
   if(nrow(df) == 0) stop("the data provided is empty")
@@ -34,31 +31,40 @@ boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
   if(B * (1 - conf.level) / 2 < 1) stop("the number of Bootstrap simulations is too small in relation to the confidence level")
   offset = round(B * (1 - conf.level) / 2)
 
-  ### Running the Bootstrap loop with foreach, and doParallel as backend
+  ### Using sapply for small data size
 
-  ### TODO: use method with lower computational fixed cost for small data
+  if(nrow(df) <= 5e5){
+    boot_vec <- sapply(1:B, function(x){
+      fct(slice_sample(df, n = nrow(df), replace = TRUE))})
 
-  # Detecting the number of cores if not provided by the user
-  if(missing(cores)){
-    cores <- parallel::detectCores() - 1
   }
-  # Initializing the cluster
-  doParallel::registerDoParallel(cores = cores)
-  boot_vec <- rep(NA, B)
-  inner_df <- df
+  ### Running the Bootstrap loop with foreach, and doParallel as backend
+  else {
+    # Validating dependencies
+    if (!requireNamespace("doParallel", quietly = TRUE)) {
+      stop("Package \"doParallel\" must be installed to use this function.", call. = FALSE)}
 
-  boot_vec <- foreach::foreach(i=1:B,
-                 .combine='c',
-                 .packages = "dplyr",
-                 .inorder = FALSE) %dopar% {
-                   sample_df <- dplyr::slice_sample(inner_df, n = nrow(inner_df), replace = TRUE)
-                   fct(sample_df)
-                 }
-  doParallel::stopImplicitCluster()
+    # Detecting the number of cores if not provided by the user
+    if(missing(cores)){
+      cores <- parallel::detectCores() - 1
+    }
+    # Initializing the cluster
+    doParallel::registerDoParallel(cores = cores)
+    boot_vec <- rep(NA, B)
+    inner_df <- df
+
+    boot_vec <- foreach::foreach(i=1:B,
+                                 .combine='c',
+                                 .packages = "dplyr",
+                                 .inorder = FALSE) %dopar% {
+                                   sample_df <- dplyr::slice_sample(inner_df, n = nrow(inner_df), replace = TRUE)
+                                   fct(sample_df)
+                                 }
+    doParallel::stopImplicitCluster()
+  }
 
   if(any(is.na(boot_vec))) stop("the function returned an NA")
   boot_vec <- sort(boot_vec, decreasing = FALSE)
-
   lower_bound <- boot_vec[offset]
   upper_bound <- boot_vec[B+1-offset]
   CI <- c(lower_bound, upper_bound)
