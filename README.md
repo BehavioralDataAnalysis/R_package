@@ -8,6 +8,10 @@
 [![Codecov test
 coverage](https://codecov.io/gh/BehavioralDataAnalysis/R_package/branch/main/graph/badge.svg)](https://app.codecov.io/gh/BehavioralDataAnalysis/R_package?branch=main)
 [![check-standard](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/BehavioralDataAnalysis/R_package/actions/workflows/check-standard.yaml)
+[![Project Status: WIP – Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+
 <!-- badges: end -->
 
 \*\* WORK IN PROGRESS! Please forgive the mess until the package is
@@ -74,7 +78,7 @@ reg_fun <- function(dat){
 }
 CI <- boot_CI(starwars, reg_fun, cores = 2)
 print(CI)
-#> [1] 0.004523824 1.112500971
+#> [1] 0.008761208 1.177896532
 ```
 
 ### matching subject for experimentation
