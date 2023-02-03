@@ -8,6 +8,14 @@
 \description{
 Bootstrap and Sampling Functions For Behavioral Data Analysis
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/BehavioralDataAnalysis/R_package}
+  \item Report bugs at \url{https://github.com/BehavioralDataAnalysis/R_package/issues}
+}
+
+}
 \author{
 Florent <florent.buisson.oreilly@maskedmails.com>
 }

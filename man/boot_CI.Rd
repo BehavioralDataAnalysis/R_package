@@ -9,7 +9,7 @@ boot_CI(df, fct, B = 100, conf.level = 0.9, cores = 2)
 \arguments{
 \item{df}{data to use}
 
-\item{fct}{function to run on the data}
+\item{fct}{function or linear regression formula to run on the data}
 
 \item{B}{number of Bootstrap sampling iterations to run}
 
@@ -18,7 +18,7 @@ boot_CI(df, fct, B = 100, conf.level = 0.9, cores = 2)
 \item{cores}{the number of cores to use for parallel processing}
 }
 \value{
-a vector with two values, the lower and upper bounds of the confidence interval
+if the input is a function: a vector with two values, the lower and upper bounds of the confidence interval; otherwise, if the input is a linear regression formula, a matrix where each row contains the lower and upper bounds of the confidence interval for the corresponding regression coefficient
 }
 \description{
 Creates a Bootstrap confidence interval for the output of a function

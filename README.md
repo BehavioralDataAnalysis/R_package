@@ -78,7 +78,7 @@ reg_fun <- function(dat){
 }
 CI <- boot_CI(starwars, reg_fun, cores = 2)
 print(CI)
-#> [1] 0.008761208 1.177896532
+#> [1] 0.005405755 1.178812451
 ```
 
 ### matching subject for experimentation
@@ -99,8 +99,8 @@ attach(starwars)
 set.seed(1)
 dat <- starwars %>%
   na.omit() %>%
-  select(-films, -vehicles, -starships) %>%
-  filter(!grepl('Dooku', name))
+  dplyr::select(-films, -vehicles, -starships) %>%
+  dplyr::filter(!grepl('Dooku', name))
 
 strat_assigned_dat <- strat_assign(dat, id = 'name')
 summ <- strat_assigned_dat %>% 

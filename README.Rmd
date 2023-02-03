@@ -73,8 +73,8 @@ attach(starwars)
 set.seed(1)
 dat <- starwars %>%
   na.omit() %>%
-  select(-films, -vehicles, -starships) %>%
-  filter(!grepl('Dooku', name))
+  dplyr::select(-films, -vehicles, -starships) %>%
+  dplyr::filter(!grepl('Dooku', name))
 
 strat_assigned_dat <- strat_assign(dat, id = 'name')
 summ <- strat_assigned_dat %>% 
