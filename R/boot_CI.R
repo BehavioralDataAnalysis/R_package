@@ -82,16 +82,53 @@ boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
     if(nrow(df) <= 5e5){
       boot_mat <- sapply(1:B, function(x){
         mod <- stats::lm(formula = fct,
-                  data    = slice_sample(df, n = nrow(df), replace = TRUE))
+                         data    = slice_sample(df, n = nrow(df), replace = TRUE))
         return(mod$coefficients)})
     }
-    ## TODO: Running the Bootstrap loop with foreach, and doParallel as backend
-    #else {}
+    ## Running the Bootstrap loop with foreach, and doParallel as backend
+    else {
+      # Validating dependencies
+      if (!requireNamespace("doParallel", quietly = TRUE)) {
+        stop("Package \"doParallel\" must be installed to use this function.", call. = FALSE)}
+
+      # Running the regression once through an anonymous function to get the names of the coefficients
+      coeff_names <- (function(dat) {
+        mod <- stats::lm(formula = fct, data = head(dat))
+        names(mod$coefficients)})(df)
+
+      # Converting the regression formula to a function
+      reg_fun <- function(df){
+        mod <- stats::lm(formula = fct,
+                         data    = df)
+        res_mat <- matrix(data = mod$coefficients, ncol = 1)
+        return(res_mat)
+      }
+      N_coeffs = length(reg_fun(df_large_num))
+
+      # Detecting the number of cores if not provided by the user
+      if(missing(cores)){
+        cores <- parallel::detectCores() - 1
+      }
+      # Initializing the cluster
+      doParallel::registerDoParallel(cores = cores)
+      boot_mat <- matrix(data = NA, nrow = N_coeffs, ncol = B)
+      inner_df <- df # Creating a copy of the data to avoid side effects
+
+      boot_mat <- foreach::foreach(i=1:B,
+                                   .combine='cbind',
+                                   .packages = "dplyr",
+                                   .inorder = FALSE) %dopar% {
+                                     sample_df <- dplyr::slice_sample(inner_df, n = nrow(inner_df), replace = TRUE)
+                                     reg_fun(sample_df)
+                                   }
+      doParallel::stopImplicitCluster()
+    }
 
     ordered_boot_mat <- apply(boot_mat, 1, sort, decreasing = FALSE)
     lower_bound <- ordered_boot_mat[offset,]
     upper_bound <- ordered_boot_mat[B+1-offset,]
     CI <- cbind(lower_bound, upper_bound)
+    row.names(CI) <- coeff_names
 
   } else stop("the second argument of the function must be a function or a regression formula")
 

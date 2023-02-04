@@ -62,6 +62,16 @@ test_that("boot_CI returns the right value when passed a linear regression formu
   expect_lt(abs(CI['height','upper_bound'] - 0.6386), 0.03)
 })
 
+test_that("boot_CI returns the right value when passed a linear regression formula to apply to a large dataset", {
+  set.seed(1)
+  CI <- boot_CI(df_large_num,
+                "y~x",
+                B = 20,
+                conf.level = 0.2,
+                cores = 2)
+  expect_lt(abs(CI['x', 'lower_bound'] - 1), 0.1)
+  expect_lt(abs(CI['x', 'upper_bound'] -1), 0.1)
+})
 
 
 
