@@ -19,6 +19,7 @@
 boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
 
   #Validating the inputs
+  if(length(intersect(class(df), c("tbl_df", "tbl", "data.frame")))==0) stop("please provide data in  a data.frame or similar format")
   if(nrow(df) == 0) stop("the data provided is empty")
   if(B <= 0) stop("the value provided for the number of Bootstrap simulations is negative")
   if(conf.level <= 0) stop("the value provided for the confidence level is negative")

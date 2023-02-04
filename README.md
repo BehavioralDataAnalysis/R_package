@@ -37,6 +37,10 @@ Python](https://smile.amazon.com/Behavioral-Data-Analysis-Python-Customer-Driven
 (O’Reilly Media). But you can totally use this package without reading
 the book, and I’ve tried to make the documentation self-sustaining.
 
+Please note that the package is designed to integrate nicely with the
+Tidyverse and therefore most functions will expect data formatted as a
+data.frame or a tibble.
+
 ## Installation
 
 You can install the development version of BehavioralDataAnalysis from
@@ -60,25 +64,34 @@ and computation than my personal laptop can manage and I find it
 somewhat cumbersome to use. Definitely check it out if you need a more
 serious implementation than the one here!
 
-At the moment, you need to pass to `boot_CI()` a single-valued function
-(i.e., a function that returns a single number instead of, for instance,
-all the parameters of a regression), as demonstrated below. In the
-future, I’m planning to have it accept a regression formula as well, to
-reduce some boilerplate code.
+You can pass to `boot_CI()` any function that takes as argument a data
+frame and returns a single number:
 
 ``` r
 library(BehavioralDataAnalysis)
+my_data <- data.frame(
+  x = rnorm(100)
+)
+
+my_function <- function(df) { return(mean(df$x)) }
+
+CI <- boot_CI(my_data, my_function)
+print(CI)
+#> [1] -0.1700176  0.1939258
+```
+
+However, the most common use case is probably to use it to run a
+regression, so you can also pass directly the formula for a linear
+regression as the second parameter:
+
+``` r
 data(starwars, package = "dplyr")
 
-reg_fun <- function(dat){
-  formula <- 'height~mass'
-  mod <- lm(formula, data = dat)
-  coeff <- as.numeric(mod$coefficients['mass'])
-  return(coeff)
-}
-CI <- boot_CI(starwars, reg_fun, cores = 2)
+CI <- boot_CI(starwars, 'mass~height')
 print(CI)
-#> [1] 0.006214788 1.097419357
+#>             lower_bound upper_bound
+#> (Intercept) -49.1464683  60.3906488
+#> height        0.3806535   0.8443385
 ```
 
 ### matching subject for experimentation
@@ -114,8 +127,9 @@ print(summ)
 #> 2     1        180.
 ```
 
-As we can see, the mean heights of the two groups are pretty close.
-Let’s see what it looks like with pure randomization for reference:
+As we can see, the mean heights of the two groups are pretty close. With
+pure randomization on the other hand, the two values are further apart
+from each other:
 
 ``` r
 set.seed(1)

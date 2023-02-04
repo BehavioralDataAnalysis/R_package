@@ -2,7 +2,7 @@
 % Please edit documentation in R/paired_assign.R
 \name{paired_assign}
 \alias{paired_assign}
-\title{Create a stratified assignment (aka. pair matching)}
+\title{Create a stratified assignment, or pair matching}
 \usage{
 paired_assign(df, id, n.groups = 2)
 }
@@ -17,7 +17,7 @@ paired_assign(df, id, n.groups = 2)
 the original data frame, with an added column for group assignment
 }
 \description{
-Create a stratified assignment (aka. pair matching)
+Create a stratified assignment, or pair matching
 }
 \examples{
 df1 <- data.frame(
