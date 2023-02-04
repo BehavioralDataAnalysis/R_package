@@ -32,8 +32,10 @@ boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
   ### First case: fct is a function
   if(is.function(fct)){
 
-    # Validating that the function returns a single-valued output
-    if(suppressWarnings(is.na(fct(df)|length(fct(df))>1))) stop("the function doesn't return a single-valued, non-null output.")
+    # Validating that the function returns a non-null, single-valued output
+    if(suppressWarnings(length(fct(df))!=1)) stop("the function returned an output of length different from 1")
+    if(suppressWarnings(is.na(fct(df)))) stop("the function returned NA")
+
 
     ## Using sapply for small data size
     if(nrow(df) <= 5e5){

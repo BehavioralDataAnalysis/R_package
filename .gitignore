@@ -4,3 +4,4 @@
 .httr-oauth
 .DS_Store
 /dev_utils
+/local_test_data
