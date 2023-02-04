@@ -5,3 +5,6 @@
 ^\.github$
 ^dev_utils$
 ^codemeta\.json$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
