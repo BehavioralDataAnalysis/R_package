@@ -84,6 +84,11 @@ boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
         mod <- stats::lm(formula = fct,
                          data    = slice_sample(df, n = nrow(df), replace = TRUE))
         return(mod$coefficients)})
+
+      ordered_boot_mat <- apply(boot_mat, 1, sort, decreasing = FALSE)
+      lower_bound <- ordered_boot_mat[offset,]
+      upper_bound <- ordered_boot_mat[B+1-offset,]
+      CI <- cbind(lower_bound, upper_bound)
     }
     ## Running the Bootstrap loop with foreach, and doParallel as backend
     else {
@@ -103,7 +108,7 @@ boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
         res_mat <- matrix(data = mod$coefficients, ncol = 1)
         return(res_mat)
       }
-      N_coeffs = length(reg_fun(df_large_num))
+      N_coeffs = length(reg_fun(df))
 
       # Detecting the number of cores if not provided by the user
       if(missing(cores)){
@@ -122,13 +127,13 @@ boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
                                      reg_fun(sample_df)
                                    }
       doParallel::stopImplicitCluster()
-    }
 
-    ordered_boot_mat <- apply(boot_mat, 1, sort, decreasing = FALSE)
-    lower_bound <- ordered_boot_mat[offset,]
-    upper_bound <- ordered_boot_mat[B+1-offset,]
-    CI <- cbind(lower_bound, upper_bound)
-    row.names(CI) <- coeff_names
+      ordered_boot_mat <- apply(boot_mat, 1, sort, decreasing = FALSE)
+      lower_bound <- ordered_boot_mat[offset,]
+      upper_bound <- ordered_boot_mat[B+1-offset,]
+      CI <- cbind(lower_bound, upper_bound)
+      row.names(CI) <- coeff_names
+    }
 
   } else stop("the second argument of the function must be a function or a regression formula")
 
