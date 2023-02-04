@@ -1,4 +1,4 @@
-#' Create a stratified assignment (aka. pair matching)
+#' Create a stratified assignment, or pair matching
 #'
 #' @param df data to use
 #' @param id column(s) used for identification
@@ -9,13 +9,13 @@
 #' id = 1:6,
 #' x = c(1, 1.5, 5, 5.5, 10, 10.5),
 #' y = c(1, 1.5, 5, 5.5, 10, 10.5))
-#' strat_assign(df1, 'id')
+#' paired_assign(df1, 'id')
 #' @export
 
-strat_assign <- function(df, id, n.groups = 2){
+paired_assign <- function(df, id, n.groups = 2){
 
   # Generating the matched pairs
-  pairs_mat <- pairing(df, id = id, n.groups = n.groups)
+  pairs_mat <- pair(df, id = id, n.groups = n.groups)
 
   # Assigning experimental groups to the matched pairs
   N_pairs <- nrow(pairs_mat)

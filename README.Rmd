@@ -64,7 +64,7 @@ print(CI)
 
 ### matching subject for experimentation
 
-If you have access to your whole list of subjects ahead of time (e.g., as opposed to users visiting at random your website), you can pair subjects sharing similar characteristics, to ensure that your experimental groups are as balanced as possible. This is also called stratified assignment, hence the name of the function `strat_assign()`. Note however that it will make traditional statistics invalid, and you'll have to use the Bootstrap to build intervals around your central estimates. 
+If you have access to your whole list of subjects ahead of time (e.g., as opposed to users visiting at random your website), you can pair subjects sharing similar characteristics, to ensure that your experimental groups are as balanced as possible. This is also called stratified assignment, hence the name of the function `paired_assign()`. Note however that it will make traditional statistics invalid, and you'll have to use the Bootstrap to build intervals around your central estimates. 
 
 ```{r, message=FALSE, warning=FALSE}
 library(dplyr)
@@ -76,8 +76,8 @@ dat <- starwars %>%
   dplyr::select(-films, -vehicles, -starships) %>%
   dplyr::filter(!grepl('Dooku', name))
 
-strat_assigned_dat <- strat_assign(dat, id = 'name')
-summ <- strat_assigned_dat %>% 
+paired_assigned_dat <- paired_assign(dat, id = 'name')
+summ <- paired_assigned_dat %>% 
   group_by(grp) %>% 
   summarize(mean_height = mean(height, na.rm = TRUE))
 print(summ)

@@ -11,11 +11,11 @@
 #' id = 1:6,
 #' x = c(1, 1.5, 5, 5.5, 10, 10.5),
 #' y = c(1, 1.5, 5, 5.5, 10, 10.5))
-#' pairing(df1, 'id')
+#' pair(df1, 'id')
 #' @export
 
 
-pairing <- function(df, id, n.groups = 2){
+pair <- function(df, id, n.groups = 2){
 
   # Running checks and getting distance matrix from auxiliary function
   d_mat <- checks_and_preps_dmat(df = df, id = id)
@@ -44,7 +44,7 @@ pairing <- function(df, id, n.groups = 2){
         break
       } else if(length(matches) > nb_matches_needed){
         # Resolving ties: suboptimal implementation until required by c++ code
-        warning("The ELSE IF branch in pairing() was reached. Time to write a better tie-breaking code")
+        warning("The ELSE IF branch in pair() was reached. Time to write a better tie-breaking code")
         matches <- matches[1:nb_matches_needed]
       }
       # Otherwise, redo the loop for search_lim += 1

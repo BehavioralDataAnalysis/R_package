@@ -78,7 +78,7 @@ reg_fun <- function(dat){
 }
 CI <- boot_CI(starwars, reg_fun, cores = 2)
 print(CI)
-#> [1] 0.005405755 1.178812451
+#> [1] 0.006214788 1.097419357
 ```
 
 ### matching subject for experimentation
@@ -87,7 +87,7 @@ If you have access to your whole list of subjects ahead of time (e.g.,
 as opposed to users visiting at random your website), you can pair
 subjects sharing similar characteristics, to ensure that your
 experimental groups are as balanced as possible. This is also called
-stratified assignment, hence the name of the function `strat_assign()`.
+stratified assignment, hence the name of the function `paired_assign()`.
 Note however that it will make traditional statistics invalid, and
 you’ll have to use the Bootstrap to build intervals around your central
 estimates.
@@ -102,8 +102,8 @@ dat <- starwars %>%
   dplyr::select(-films, -vehicles, -starships) %>%
   dplyr::filter(!grepl('Dooku', name))
 
-strat_assigned_dat <- strat_assign(dat, id = 'name')
-summ <- strat_assigned_dat %>% 
+paired_assigned_dat <- paired_assign(dat, id = 'name')
+summ <- paired_assigned_dat %>% 
   group_by(grp) %>% 
   summarize(mean_height = mean(height, na.rm = TRUE))
 print(summ)

@@ -1,32 +1,32 @@
-test_that("stratified assignment works on numeric data", {
-  strat_df <- strat_assign(df_num, id = 'id')
+test_that("paired assignment works on numeric data", {
+  strat_df <- paired_assign(df_num, id = 'id')
   expect_equal(sum(strat_df[1:2, 'grp']), 1)
   expect_equal(sum(strat_df[3:4, 'grp']), 1)
   expect_equal(sum(strat_df[5:6, 'grp']), 1)
 })
 
-test_that("stratified assignment works when the number of rows isn't divisible by the number of groups", {
+test_that("paired assignment works when the number of rows isn't divisible by the number of groups", {
   df1 <- data.frame(id = 1:7,
                     x = c(1, 1.5, 5, 5.5, 10, 10.5, 20),
                     y = c(1, 1.5, 5, 5.5, 10, 10.5, 20))
-  strat_df <- strat_assign(df1, id = 'id')
+  strat_df <- paired_assign(df1, id = 'id')
   expect_equal(sum(strat_df[1:2, 'grp']), 1)
   expect_equal(sum(strat_df[3:4, 'grp']), 1)
   expect_equal(sum(strat_df[5:6, 'grp']), 1)
 })
 
-test_that("stratified assignment works with character data", {
-  strat_df <- strat_assign(df_char, id = 'id')
+test_that("paired assignment works with character data", {
+  strat_df <- paired_assign(df_char, id = 'id')
   expect_equal(sum(strat_df[1:2, 'grp']), 1)
   expect_equal(sum(strat_df[3:4, 'grp']), 1)
   expect_equal(sum(strat_df[5:6, 'grp']), 1)
 })
 
-test_that("stratified assignment works with character id", {
+test_that("paired assignment works with character id", {
   df <- data.frame(id = c('a', 'b', 'c', 'd', 'e', 'f'),
                     x = c(1, 1.5, 5, 5.5, 10, 10.5),
                     y = c(1, 1.5, 5, 5.5, 10, 10.5))
-  strat_df <- strat_assign(df, id = 'id')
+  strat_df <- paired_assign(df, id = 'id')
   expect_equal(sum(strat_df[1:2, 'grp']), 1)
   expect_equal(sum(strat_df[3:4, 'grp']), 1)
   expect_equal(sum(strat_df[5:6, 'grp']), 1)
@@ -34,19 +34,19 @@ test_that("stratified assignment works with character id", {
 
 ### Tests with character/factor id column
 
-test_that("stratified assignment works with character id", {
+test_that("paired assignment works with character id", {
   df <- data.frame(id = c('a', 'b', 'c', 'd', 'e', 'f'),
                     x = c(1, 1.5, 5, 5.5, 10, 10.5),
                     y = c(1, 1.5, 5, 5.5, 10, 10.5))
-  strat_df <- strat_assign(df, id = 'id')
+  strat_df <- paired_assign(df, id = 'id')
   expect_equal(sum(strat_df[1:2, 'grp']), 1)
   expect_equal(sum(strat_df[3:4, 'grp']), 1)
   expect_equal(sum(strat_df[5:6, 'grp']), 1)
 })
 
-test_that("stratified assignment works with starwars data", {
+test_that("paired assignment works with starwars data", {
   starwars_df <- setup_test('starwars')
-  strat_df <- strat_assign(starwars_df, id = 'name')
+  strat_df <- paired_assign(starwars_df, id = 'name')
   skywalkers <- strat_df %>%
     filter(grepl('Skywalker', name)) %>%
     select(grp)

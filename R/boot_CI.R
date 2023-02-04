@@ -98,7 +98,7 @@ boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
 
       # Running the regression once through an anonymous function to get the names of the coefficients
       coeff_names <- (function(dat) {
-        mod <- stats::lm(formula = fct, data = head(dat))
+        mod <- stats::lm(formula = fct, data = utils::head(dat))
         names(mod$coefficients)})(df)
 
       # Converting the regression formula to a function
