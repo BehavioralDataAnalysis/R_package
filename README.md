@@ -77,12 +77,13 @@ my_function <- function(df) { return(mean(df$x)) }
 
 CI <- boot_ci(my_data, my_function)
 print(CI)
-#> [1] -0.1700176  0.1939258
+#> [1] -0.04210283  0.27596257
 ```
 
 However, the most common use case is probably to use it to run a
 regression, so you can also pass directly the formula for a linear
-regression as the second parameter:
+regression as the second parameter. For example, let’s see what is the
+relationship between mass and height in the `starwars` dataset.
 
 ``` r
 data(starwars, package = "dplyr")
@@ -90,8 +91,8 @@ data(starwars, package = "dplyr")
 CI <- boot_ci(starwars, 'mass~height')
 print(CI)
 #>             lower_bound upper_bound
-#> (Intercept) -49.1464683  60.3906488
-#> height        0.3806535   0.8443385
+#> (Intercept)  -50.543006  46.8847538
+#> height         0.454011   0.8109917
 ```
 
 ### matching subject for experimentation
