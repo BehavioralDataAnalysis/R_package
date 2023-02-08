@@ -13,10 +13,10 @@
 #' id = 1:6,
 #' x = c(1, 1.5, 5, 5.5, 10, 10.5),
 #' y = c(1, 1.5, 5, 5.5, 10, 10.5))
-#' boot_CI(df1, function(df) mean(df$x), cores = 2)
+#' boot_ci(df1, function(df) mean(df$x), cores = 2)
 #' @export
 
-boot_CI <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
+boot_ci <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
 
   #Validating the inputs
   if(length(intersect(class(df), c("tbl_df", "tbl", "data.frame")))==0) stop("please provide data in  a data.frame or similar format")

@@ -55,7 +55,7 @@ devtools::install_github("BehavioralDataAnalysis/R_package")
 
 ### Bootstrap confidence interval
 
-The function that you’re most likely to use is probably `boot_CI()`,
+The function that you’re most likely to use is probably `boot_ci()`,
 which estimates a Bootstrap interval for a function applied to a
 dataset. While the `boot.ci()` function of the [boot
 package]('https://cran.r-project.org/web/packages/boot/index.html')
@@ -64,7 +64,7 @@ and computation than my personal laptop can manage and I find it
 somewhat cumbersome to use. Definitely check it out if you need a more
 serious implementation than the one here!
 
-You can pass to `boot_CI()` any function that takes as argument a data
+You can pass to `boot_ci()` any function that takes as argument a data
 frame and returns a single number:
 
 ``` r
@@ -75,7 +75,7 @@ my_data <- data.frame(
 
 my_function <- function(df) { return(mean(df$x)) }
 
-CI <- boot_CI(my_data, my_function)
+CI <- boot_ci(my_data, my_function)
 print(CI)
 #> [1] -0.1700176  0.1939258
 ```
@@ -87,7 +87,7 @@ regression as the second parameter:
 ``` r
 data(starwars, package = "dplyr")
 
-CI <- boot_CI(starwars, 'mass~height')
+CI <- boot_ci(starwars, 'mass~height')
 print(CI)
 #>             lower_bound upper_bound
 #> (Intercept) -49.1464683  60.3906488

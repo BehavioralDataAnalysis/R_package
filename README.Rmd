@@ -46,9 +46,9 @@ devtools::install_github("BehavioralDataAnalysis/R_package")
 
 ### Bootstrap confidence interval
 
-The function that you're most likely to use is probably `boot_CI()`, which estimates a Bootstrap interval for a function applied to a dataset. While the `boot.ci()` function of the [boot package]('https://cran.r-project.org/web/packages/boot/index.html') offers more options and is more powerful, it often requires more memory and computation than my personal laptop can manage and I find it somewhat cumbersome to use. Definitely check it out if you need a more serious implementation than the one here!
+The function that you're most likely to use is probably `boot_ci()`, which estimates a Bootstrap interval for a function applied to a dataset. While the `boot.ci()` function of the [boot package]('https://cran.r-project.org/web/packages/boot/index.html') offers more options and is more powerful, it often requires more memory and computation than my personal laptop can manage and I find it somewhat cumbersome to use. Definitely check it out if you need a more serious implementation than the one here!
 
-You can pass to `boot_CI()` any function that takes as argument a data frame and returns a single number:
+You can pass to `boot_ci()` any function that takes as argument a data frame and returns a single number:
 
 ```{r}
 library(BehavioralDataAnalysis)
@@ -58,7 +58,7 @@ my_data <- data.frame(
 
 my_function <- function(df) { return(mean(df$x)) }
 
-CI <- boot_CI(my_data, my_function)
+CI <- boot_ci(my_data, my_function)
 print(CI)
 ```
 However, the most common use case is probably to use it to run a regression, so you can also pass directly the formula for a linear regression as the second parameter. For example, let's see what is the relationship between mass and height in the `starwars` dataset.
@@ -66,7 +66,7 @@ However, the most common use case is probably to use it to run a regression, so 
 ```{r}
 data(starwars, package = "dplyr")
 
-CI <- boot_CI(starwars, 'mass~height')
+CI <- boot_ci(starwars, 'mass~height')
 print(CI)
 ```
 

@@ -2,7 +2,7 @@
 
 export("%>%")
 export(argpartsort)
-export(boot_CI)
+export(boot_ci)
 export(pair)
 export(paired_assign)
 import(Rcpp)
