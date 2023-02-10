@@ -84,19 +84,16 @@ checks_and_preps_dmat <- function(df, id){
   #Handling numeric variables
   normalized_vars <- data.frame(nrow(matching_vars))
   if(any(sapply(matching_vars, class)=='numeric')){
-    num_vars <- matching_vars %>%
-      dplyr::select_if(function(x) is.numeric(x)|is.integer(x))
-
-    #Normalizing numeric variables
-    normalized_vars <- num_vars %>%
-      dplyr::mutate(dplyr::across(.fns = scales::rescale))
+    normalized_vars <- matching_vars %>%
+      dplyr::select_if(function(x) is.numeric(x)|is.integer(x)) %>%
+      dplyr::mutate(dplyr::across(everything(), .fns = scales::rescale))
   } else {warning("The data has no numeric variables. Results may be unstable.")}
 
   #Handling categorical variables
   if(any(sapply(matching_vars, class)=='factor'|sapply(matching_vars, class)=='character')){
     cat_vars <- matching_vars %>%
       dplyr::select_if(function(x) is.factor(x)|is.character(x)) %>%
-      dplyr::mutate(dplyr::across(.fns = as.factor))
+      dplyr::mutate(dplyr::across(everything(), .fns = as.factor))
 
     #One-hot encoding categorical variables
     normalized_cat_vars <- as.data.frame(stats::model.matrix( ~.-1, data = cat_vars))

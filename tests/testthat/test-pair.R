@@ -41,11 +41,15 @@ test_that("pair works with character id", {
   expect_identical(pair(df1, 'id'), matrix(data = c('b', 'a', 'd', 'c', 'f', 'e'), nrow = 3, byrow = TRUE))
 })
 
-
-
-test_that("pair works with starwars data", {
-  starwars_df <- setup_test('starwars')
+test_that("pair works with starwars data and 2 groups", {
   sw_pairs <- pair(starwars_df, id = 'name')
   expect_identical(sw_pairs[1,], c("Anakin Skywalker", "Luke Skywalker"))
+})
+
+test_that("pair works with starwars data and 3 groups", {
+  N <- 3
+  sw_pairs <- pair(starwars_df, id = 'name', n.groups = N)
+  expect_equal(ncol(sw_pairs), N)
+  expect_identical(sw_pairs[1,], c("Owen Lars", "Anakin Skywalker", "Luke Skywalker"))
 })
 

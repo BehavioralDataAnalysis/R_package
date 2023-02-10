@@ -77,7 +77,7 @@ my_function <- function(df) { return(mean(df$x)) }
 
 CI <- boot_ci(my_data, my_function)
 print(CI)
-#> [1] -0.04210283  0.27596257
+#> [1] -0.1550445  0.2011823
 ```
 
 However, the most common use case is probably to use it to run a
@@ -91,8 +91,8 @@ data(starwars, package = "dplyr")
 CI <- boot_ci(starwars, 'mass~height')
 print(CI)
 #>             lower_bound upper_bound
-#> (Intercept)  -50.543006  46.8847538
-#> height         0.454011   0.8109917
+#> (Intercept)  -48.179736  59.1117148
+#> height         0.384667   0.7584546
 ```
 
 ### matching subject for experimentation
@@ -124,8 +124,8 @@ print(summ)
 #> # A tibble: 2 × 2
 #>     grp mean_height
 #>   <dbl>       <dbl>
-#> 1     0        175.
-#> 2     1        180.
+#> 1     0        180.
+#> 2     1        175.
 ```
 
 As we can see, the mean heights of the two groups are pretty close. With

@@ -20,7 +20,9 @@ paired_assign <- function(df, id, n.groups = 2){
   # Assigning experimental groups to the matched pairs
   N_pairs <- nrow(pairs_mat)
   assgnmt <- matrix(0, nrow = N_pairs, ncol = n.groups)
-  assgnmt[,1] <- 1
+  for(i in 1:n.groups){
+    assgnmt[,i] <- i - 1
+  }
   shuffled_assgnmt <- t(apply(assgnmt, 1, sample))
 
   pairs_df <- data.frame(
@@ -28,7 +30,7 @@ paired_assign <- function(df, id, n.groups = 2){
     grp = c(shuffled_assgnmt)
   )
 
-  # Replacing 'id' by the correct value
+  # Replacing column names
   colnames(pairs_df) <- c(eval(id), 'grp')
 
   df_out <- merge(df, pairs_df, by=id)

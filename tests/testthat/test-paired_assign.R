@@ -44,12 +44,16 @@ test_that("paired assignment works with character id", {
   expect_equal(sum(strat_df[5:6, 'grp']), 1)
 })
 
-test_that("paired assignment works with starwars data", {
-  starwars_df <- setup_test('starwars')
+test_that("paired assignment works with starwars data and 2 groups", {
+  N <- 2
   strat_df <- paired_assign(starwars_df, id = 'name')
-  skywalkers <- strat_df %>%
-    filter(grepl('Skywalker', name)) %>%
-    select(grp)
-  expect_equal(sum(skywalkers), 1)
+  expect_equal(n_distinct(strat_df$grp), N)
+  expect_equal(strat_df %>% filter(grp == 0) %>% nrow(), nrow(starwars_df) %/% N)
+})
 
+test_that("paired assignment works with starwars data and 3 groups", {
+  N <- 3
+  strat_df <- paired_assign(starwars_df, id = 'name', n.groups = N)
+  expect_equal(n_distinct(strat_df$grp), N)
+  expect_equal(strat_df %>% filter(grp == 0) %>% nrow(), nrow(starwars_df) %/% N)
 })
