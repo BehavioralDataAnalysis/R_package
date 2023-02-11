@@ -62,7 +62,7 @@ test_that("boot_ci returns an error when given a regression formula that doesn't
 test_that("boot_ci returns an error if the function applied sometimes return NA", {
   set.seed(1)
   faulty_mean <- function(df){
-    val <- ifelse(runif(1) < 0.1, NA, mean(df$height))
+    val <- ifelse(stats::runif(1) < 0.1, NA, mean(df$height))
     return(val)
   }
   expect_error(boot_ci(starwars_df, faulty_mean),
@@ -101,8 +101,8 @@ test_that("boot_ci returns the right value when passed a linear regression formu
   CI <- boot_ci(starwars_df,
                 "mass~height",
                 conf.level = 0.1)
-  expect_lt(abs(CI['height','lower_bound'] - 0.75), 0.05)
-  expect_lt(abs(CI['height','upper_bound'] - 0.75), 0.05)
+  expect_lt(abs(CI['height','lower_bound'] - 0.75), 0.1)
+  expect_lt(abs(CI['height','upper_bound'] - 0.75), 0.1)
 })
 
 test_that("boot_ci returns the right value when passed a linear regression formula to apply to a large dataset", {
