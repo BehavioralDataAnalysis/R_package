@@ -132,8 +132,8 @@ argpartsort <- function(dat, n){
 
 
   # Input validation
-  if(!is(n, 'numeric')) stop("the number of values to return is not an integer")
-  if(n <= 0) stop("the number of values to return is not positive")
+  if(!is.integer(n) & n != as.integer(n)) stop("the number of values to return is not an integer")
+  if(n <= 0) stop("the number of values to return is not strictly positive")
 
   if(is(dat, 'vector')){
     # Returns the indices of the n smallest values
@@ -142,7 +142,7 @@ argpartsort <- function(dat, n){
     # Returns the indices of the n smallest values for each column
     ordered_mat <- apply(dat, 2, function(x) order(x)[1:n])
     return(ordered_mat)
-  }
+  } else stop("the data passed must be in vector or matrix format")
 }
 
 # Normalizing all the numeric vectors in matching_vars

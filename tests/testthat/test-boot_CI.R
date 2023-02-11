@@ -1,9 +1,36 @@
-##### Error handling #####
+##### Error handling for initial data validation #####
 
 test_that("boot_ci returns an error when passed data that is not formatted as a data.frame",
           {
             values <- rnorm(100)
             expect_error(boot_ci(values, mean), "please provide data in  a data.frame or similar format")
+          })
+
+test_that("boot_ci returns an error when passed an empty data frame",
+          {
+            values <- data.frame()
+            expect_error(boot_ci(values, mean), "the data provided is empty")
+          })
+
+test_that("boot_ci returns an error when provided a negative number of Bootstrap simulations",
+          {
+            values <- data.frame(x = c(1,2,3))
+            expect_error(boot_ci(values, mean, B = -10),
+                         "the value provided for the number of Bootstrap simulations is negative")
+          })
+
+test_that("boot_ci returns an error when provided a negative confidence level",
+          {
+            values <- data.frame(x = c(1,2,3))
+            expect_error(boot_ci(values, mean, conf.level = -0.1),
+                         "the value provided for the confidence level is negative")
+          })
+
+test_that("boot_ci returns an error when provided a confidence level above 1",
+          {
+            values <- data.frame(x = c(1,2,3))
+            expect_error(boot_ci(values, mean, conf.level = 2),
+                         "the value provided for the confidence level is above 1")
           })
 
 test_that("boot_ci returns an error when the number of Bootstrap simulations is too small in relation to the confidence level", {
@@ -12,8 +39,7 @@ test_that("boot_ci returns an error when the number of Bootstrap simulations is 
 })
 
 test_that("boot_ci returns an error when given a function that doesn't apply to the data", {
-  data(starwars,  package = 'dplyr')
-  expect_error(boot_ci(starwars, function(df) mean(df$fame)),
+  expect_error(boot_ci(starwars_df, function(df) mean(df$fame)),
                "the function returned NA")
 })
 
@@ -33,6 +59,16 @@ test_that("boot_ci returns an error when given a regression formula that doesn't
 
 ##### Function argument #####
 
+test_that("boot_ci returns an error if the function applied sometimes return NA", {
+  set.seed(1)
+  faulty_mean <- function(df){
+    val <- ifelse(runif(1) < 0.1, NA, mean(df$height))
+    return(val)
+  }
+  expect_error(boot_ci(starwars_df, faulty_mean),
+               "the function returned an NA")
+})
+
 test_that("boot_ci returns the right value when passed the mean function to apply to the starwars dataset", {
   set.seed(1)
   CI <- boot_ci(starwars_df,
@@ -51,6 +87,11 @@ test_that("boot_ci returns the right value when passed the mean function to appl
                 cores = 2)
   expect_lt(abs(CI[1] - 50), 0.1)
   expect_lt(abs(CI[2] -50), 0.1)
+})
+
+test_that("boot_ci returns an error if the second argument is not a function", {
+  expect_error(boot_ci(starwars_df, 2L),
+               "the second argument of the function must be a function or a regression formula")
 })
 
 ##### Linear regression formula #####
