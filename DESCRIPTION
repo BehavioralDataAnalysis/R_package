@@ -11,6 +11,8 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 RoxygenNote: 7.2.3
 Config/testthat/edition: 3
@@ -29,3 +31,4 @@ Imports:
 Depends: 
     R (>= 2.10)
 LinkingTo: Rcpp
+VignetteBuilder: knitr

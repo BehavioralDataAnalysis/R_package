@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: end -->
 
-** WORK IN PROGRESS! Please forgive the mess until the package is ready for release **
+** WORK IN PROGRESS! Please forgive the mess until the package is ready for release on CRAN **
 
 
 The goal of BehavioralDataAnalysis is to provide functions to help you analyze behavioral data, i.e., data that represents the behavior of human beings such as customers and employees. In particular, I believe that there are two aspects of behavioral data that are worth emphasizing: 
@@ -48,7 +48,7 @@ devtools::install_github("BehavioralDataAnalysis/R_package")
 
 The function that you're most likely to use is probably `boot_ci()`, which estimates a Bootstrap interval for a function applied to a dataset. While the `boot.ci()` function of the [boot package]('https://cran.r-project.org/web/packages/boot/index.html') offers more options and is more powerful, it often requires more memory and computation than my personal laptop can manage and I find it somewhat cumbersome to use. Definitely check it out if you need a more serious implementation than the one here!
 
-You can pass to `boot_ci()` any function that takes as argument a data frame and returns a single number:
+You can pass to `boot_ci()` any function that takes as argument a data frame and returns a single number, and by default it will automatically return the 90% confidence interval:
 
 ```{r}
 library(BehavioralDataAnalysis)
