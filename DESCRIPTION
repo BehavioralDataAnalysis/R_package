@@ -27,7 +27,8 @@ Imports:
     methods,
     Rcpp,
     scales,
-    stats
+    stats,
+	stringr
 Depends: 
     R (>= 2.10)
 LinkingTo: Rcpp

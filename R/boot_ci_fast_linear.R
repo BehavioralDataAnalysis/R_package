@@ -1,5 +1,5 @@
 #' Creates a Bootstrap confidence interval for the output of a linear regression,
-#' using Rfast
+#' directly solving matrix cross-product
 #'
 #' @param df data to use
 #' @param formula linear regression formula to run on the data
@@ -7,7 +7,7 @@
 #' @param conf.level confidence interval percentage to use
 #' @param cores the number of cores to use for parallel processing
 #' @return a matrix where each row contains the lower and upper bounds of the confidence interval for the corresponding regression coefficient
-#' @import doParallel foreach dplyr parallel Rfast
+#' @import doParallel foreach dplyr parallel stringr
 #' @export
 
 boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores = 2){
@@ -17,7 +17,7 @@ boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores =
   offset = round(B * (1 - conf.level) / 2)
 
   # Extracting the variable names
-  varnames <- str_extract_all(formula, "([:alnum:]|_|\\.)+") |> unlist()
+  varnames <- stringr::str_extract_all(formula, "([:alnum:]|_|\\.)+") |> unlist()
   y_name <- varnames[1]
   X_names <- varnames[-1]
 
@@ -25,10 +25,10 @@ boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores =
   df <- df |> select(all_of(varnames))
 
   # Controlling for NA values in the variables that will be used
-  if(any(is.na(df))) stop("the provided contains NA values, please remove them first")
+  if(any(is.na(df))) stop("the data provided contains NA values, please remove them first")
 
   # Encoding the data according to the model matrix
-  encoded_data <- model.matrix(~., data = df)
+  encoded_data <- stats::model.matrix(~., data = df)
   y <- encoded_data[,y_name]
   X <- encoded_data[, -which(colnames(encoded_data) == y_name)]
   Nrow <- nrow(df)
@@ -51,6 +51,9 @@ boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores =
     lower_bound <- ordered_boot_mat[offset,]
     upper_bound <- ordered_boot_mat[B+1-offset,]
     CI <- cbind(lower_bound, upper_bound)
+    if(is.null(rownames(CI))){
+      rownames(CI) <- cbind("(Intercept)", X_names)
+    }
 
     ## TODO: calculate and return Achieved Significance Level here
 
@@ -67,9 +70,10 @@ boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores =
       # Creating copies to avoid side effects
       inner_y <- y[indices]
       inner_X <- X[indices, , drop = FALSE]
-      mod_fast <- Rfast::lmfit(inner_X, inner_y)
-
-      return(mod_fast$be)
+      mod_cross <- as.vector(solve( crossprod(X), crossprod(X, y) ))
+      return(mod_cross)
+      #mod_fast <- Rfast::lmfit(inner_X, inner_y)
+      #return(mod_fast$be)
     }
     N_coeffs = length(varnames)
 
@@ -83,7 +87,7 @@ boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores =
 
     boot_mat <- foreach::foreach(i=1:B,
                                  .combine='cbind',
-                                 .packages = c("dplyr", "Rfast"),
+                                 .packages = c("dplyr"),
                                  .inorder = FALSE) %dopar% {
                                    boot_reg_fun(X, y)
                                  }
@@ -93,6 +97,9 @@ boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores =
     lower_bound <- ordered_boot_mat[offset,]
     upper_bound <- ordered_boot_mat[B+1-offset,]
     CI <- cbind(lower_bound, upper_bound)
+    if(is.null(rownames(CI))){
+      rownames(CI) <- cbind("(Intercept)", X_names)
+    }
 
     ## TODO: calculate and return Achieved Significance Level here
   }

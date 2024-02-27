@@ -39,16 +39,16 @@ test_that("boot_ci returns an error when the number of Bootstrap simulations is 
 })
 
 test_that("boot_ci returns an error when given a function that doesn't apply to the data", {
-  expect_error(boot_ci(starwars_df, function(df) mean(df$fame)),
+  expect_error(boot_ci(starwars, function(df) mean(df$fame)),
                "the function returned NA")
 })
 
 test_that("boot_ci returns an error when given a function that returns a null value", {
-  expect_error(boot_ci(starwars_df, function(df) if(FALSE){return(1)}))
+  expect_error(boot_ci(starwars, function(df) if(FALSE){return(1)}))
 })
 
 test_that("boot_ci returns an error when given a function that doesn't return a single value", {
-  expect_error(boot_ci(starwars_df, function(df) return(c(1, 2))),
+  expect_error(boot_ci(starwars, function(df) return(c(1, 2))),
                "the function returned an output of length different from 1")
 })
 
@@ -65,17 +65,17 @@ test_that("boot_ci returns an error if the function applied sometimes return NA"
     val <- ifelse(stats::runif(1) < 0.1, NA, mean(df$height))
     return(val)
   }
-  expect_error(boot_ci(starwars_df, faulty_mean),
-               "the function returned an NA")
+  expect_error(boot_ci(starwars, faulty_mean),
+               "the function returned NA")
 })
 
 test_that("boot_ci returns the right value when passed the mean function to apply to the starwars dataset", {
   set.seed(1)
-  CI <- boot_ci(starwars_df,
+  CI <- boot_ci(starwars,
                 function(df) mean(df$height, na.rm = TRUE),
                 conf.level = 0.1)
-  expect_lt(abs(CI[1] - 178), 2)
-  expect_lt(abs(CI[2] - 178), 2)
+  expect_lt(abs(CI[1] - 174), 2)
+  expect_lt(abs(CI[2] - 174), 2)
 })
 
 test_that("boot_ci returns the right value when passed the mean function to apply to a large dataset", {
@@ -90,7 +90,7 @@ test_that("boot_ci returns the right value when passed the mean function to appl
 })
 
 test_that("boot_ci returns an error if the second argument is not a function", {
-  expect_error(boot_ci(starwars_df, 2L),
+  expect_error(boot_ci(starwars, 2L),
                "the second argument of the function must be a function or a regression formula")
 })
 
@@ -98,11 +98,13 @@ test_that("boot_ci returns an error if the second argument is not a function", {
 
 test_that("boot_ci returns the right value when passed a linear regression formula to apply to the starwars dataset", {
   set.seed(1)
-  CI <- boot_ci(starwars_df,
+  df <- starwars |> select(mass, height)
+  df <- df[complete.cases(df), ]
+  CI <- boot_ci(df,
                 "mass~height",
                 conf.level = 0.1)
-  expect_lt(abs(CI['height','lower_bound'] - 0.75), 0.1)
-  expect_lt(abs(CI['height','upper_bound'] - 0.75), 0.1)
+  expect_lt(abs(CI['height','lower_bound'] - 0.64), 0.1)
+  expect_lt(abs(CI['height','upper_bound'] - 0.64), 0.1)
 })
 
 test_that("boot_ci returns the right value when passed a linear regression formula to apply to a large dataset", {

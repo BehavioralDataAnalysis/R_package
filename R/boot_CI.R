@@ -78,9 +78,9 @@ boot_ci <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
   }
   ### Second case: fct is a regression formula
   else if(is.character(fct)){
+    formula <- fct # using alias for clarity
 
     ## Determining the type of regression
-
     varnames <- str_extract_all(formula, "([:alnum:]|_|\\.)+") |> unlist()
     y_name <- varnames[1]
     cnt_vals <- df |> select(all_of(y_name)) |> n_distinct()
@@ -95,7 +95,7 @@ boot_ci <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
     ### Linear regression
 
     if(reg_type == 'linear') {
-      CI <- boot_ci_fast_linear(df = df, formula = fct, B = B,
+      CI <- boot_ci_fast_linear(df = df, formula = formula, B = B,
                                 conf.level = conf.level, cores = cores)
 
       ### OLD CODE IN CASE IT NEEDS TO BE REINSTATED
