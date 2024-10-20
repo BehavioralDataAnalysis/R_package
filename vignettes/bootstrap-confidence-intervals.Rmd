@@ -1,0 +1,63 @@
+---
+title: "bootstrap-confidence-intervals"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{bootstrap-confidence-intervals}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+# command line instruction to build the vignette: 
+# devtools::build_rmd("vignettes/bootstrap-confidence-intervals.Rmd")
+
+```
+
+# Bootstrap Confidence Intervals
+
+```{r setup}
+library(BehavioralDataAnalysis)
+```
+
+## Introduction and basic use cases
+
+### Introduction
+
+When running data analyses, we're often interested in determining how accurate they would be on new data, for example extrapolating from the past to the future. The traditional approach is to assume that the existing data and any new data both follow the same statistical distribution, whose parameters we then estimate. The Bootstrap is an alternative approach, which relies on computer simulations instead. You can learn more about the Bootstrap in my book [Behavioral Data Analysis with R and Python](https://www.amazon.com/Behavioral-Data-Analysis-Python-Customer-Driven-ebook/dp/B0979QYPWD/). There already exists a [package]('https://cran.r-project.org/web/packages/boot/index.html') dedicated to Bootstrap simulations, but it often requires more memory and computation than my personal laptop can manage and I find it somewhat cumbersome to use. I have built the `boot_ci()` function in the present package as a lightweight alternative with reasonable defaults for easy use within a Tidyverse workflow. In this vignette, I'll explain how to use it.  
+
+### Passing a linear regression formula
+
+The most common and general use case for `boot_ci()` is to build the confidence interval for a linear regression. Let's import the Boston housing price dataset from the MASS package:
+
+```{r}
+library(MASS)
+dat <- MASS::Boston
+head(dat)
+
+```
+
+The goal is to estimate the median value of owner-occupied homes in an area ('medv' variable).
+
+```{r}
+formula <- "medv~nox+crim"
+lm_fit <- lm(data = dat, formula = formula)
+summary(lm_fit)
+
+```
+However, the standard error might be a poor estimate of the distribution of a coefficient if our data is not as nicely shaped and behaved as we'd like. Using `boot_ci()` allows us to Bootstrap confidence intervals for each coefficient
+
+```{r}
+set.seed(1)
+str_extract_all(formula, "([:alnum:]|_|\\.)+") |> unlist()
+#boot_ci(dat, formula)
+```
+
+
+
+
+

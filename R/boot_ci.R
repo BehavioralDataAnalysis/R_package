@@ -6,7 +6,7 @@
 #' @param conf.level confidence interval percentage to use
 #' @param cores the number of cores to use for parallel processing
 #' @return if the input is a function: a vector with two values, the lower and upper bounds of the confidence interval; otherwise, if the input is a linear regression formula, a matrix where each row contains the lower and upper bounds of the confidence interval for the corresponding regression coefficient
-#' @import doParallel foreach dplyr parallel
+#' @import doParallel foreach dplyr parallel stringr
 #' @examples
 #' options(mc.cores = 2)
 #' df1 <- data.frame(
@@ -16,7 +16,7 @@
 #' boot_ci(df1, function(df) mean(df$x), cores = 2)
 #' @export
 
-boot_ci <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
+boot_ci <- function(df, fct, regression_type = "linear", B = 100, conf.level = 0.90, cores = 2){
 
   #Validating the inputs
   if(length(intersect(class(df), c("tbl_df", "tbl", "data.frame")))==0) stop("please provide data in  a data.frame or similar format")
@@ -76,25 +76,25 @@ boot_ci <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
     upper_bound <- boot_vec[B+1-offset]
     CI <- c(lower_bound, upper_bound)
   }
+
   ### Second case: fct is a regression formula
   else if(is.character(fct)){
     formula <- fct # using alias for clarity
 
-    ## Determining the type of regression
-    varnames <- str_extract_all(formula, "([:alnum:]|_|\\.)+") |> unlist()
-    y_name <- varnames[1]
-    cnt_vals <- df |> select(all_of(y_name)) |> n_distinct()
-    if(cnt_vals == 2L){
-      reg_type = 'logistic'
-    } else if(cnt_vals > 2L){
-      reg_type = 'linear'
-    } else {
-      stop("someting is wrong with the count of distinct values for the target variable")
-    }
+    # varnames <- stringr::str_extract_all(formula, "([:alnum:]|_|\\.)+") |> unlist()
+    # y_name <- varnames[1]
+    # cnt_vals <- df |> select(all_of(y_name)) |> n_distinct()
+    # if(cnt_vals == 2L){
+    #   reg_type = 'logistic'
+    # } else if(cnt_vals > 2L){
+    #   reg_type = 'linear'
+    # } else {
+    #   stop("someting is wrong with the count of distinct values for the target variable")
+    # }
 
     ### Linear regression
 
-    if(reg_type == 'linear') {
+    if(regression_type == 'linear') {
       CI <- boot_ci_fast_linear(df = df, formula = formula, B = B,
                                 conf.level = conf.level, cores = cores)
 
@@ -155,7 +155,7 @@ boot_ci <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
       #   CI <- cbind(lower_bound, upper_bound)
       #   row.names(CI) <- coeff_names
 
-    } else if (reg_type == 'logistic'){
+    } else if (regression_type == 'logistic'){
 
       ## TODO: add code here
 
