@@ -13,8 +13,9 @@ LazyData: true
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
-RoxygenNote: 7.2.3
+    testthat (>= 3.0.0),
+    MASS
+RoxygenNote: 7.3.2
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 BugReports: https://github.com/BehavioralDataAnalysis/R_package/issues
@@ -30,6 +31,6 @@ Imports:
     stats,
 	stringr
 Depends: 
-    R (>= 4.3.3)
+    R (>= 4.3.0)
 LinkingTo: Rcpp
 VignetteBuilder: knitr

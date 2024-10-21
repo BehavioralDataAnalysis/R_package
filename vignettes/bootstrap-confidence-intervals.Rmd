@@ -49,14 +49,18 @@ lm_fit <- lm(data = dat, formula = formula)
 summary(lm_fit)
 
 ```
-However, the standard error might be a poor estimate of the distribution of a coefficient if our data is not as nicely shaped and behaved as we'd like. Using `boot_ci()` allows us to Bootstrap confidence intervals for each coefficient
+However, the standard error might be a poor estimate of the distribution of a coefficient if our data is not as nicely shaped and behaved as we'd like. Using `boot_ci()` allows us to Bootstrap confidence intervals for each coefficient.
 
 ```{r}
 set.seed(1)
-str_extract_all(formula, "([:alnum:]|_|\\.)+") |> unlist()
-#boot_ci(dat, formula)
+boot_ci(dat, formula)
 ```
+Under the hood, `boot_ci()` relies heavily on assumptions and conventions for the sake of convenience and speed. For instance, it determines silently whether to use a linear or logistic regression based on the number of distinct values for the dependent variable. By default, it will run 100 Bootstrap simulations and returns the bounds of the 90% confidence interval, but you can override these values by explicitly passing the corresponding parameters.
 
+```{r}
+set.seed(1)
+boot_ci(dat, formula, B = 200, conf.level = 0.80)
+```
 
 
 

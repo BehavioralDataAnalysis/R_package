@@ -2,8 +2,8 @@
 % Please edit documentation in R/BehavioralDataAnalysis-package.R
 \docType{package}
 \name{BehavioralDataAnalysis}
-\alias{BehavioralDataAnalysis}
 \alias{BehavioralDataAnalysis-package}
+\alias{BehavioralDataAnalysis}
 \title{BehavioralDataAnalysis: Bootstrap and Sampling Functions For Behavioral Data Analysis}
 \description{
 Bootstrap and Sampling Functions For Behavioral Data Analysis

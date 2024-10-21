@@ -3,7 +3,7 @@
 \name{boot_ci_fast_linear}
 \alias{boot_ci_fast_linear}
 \title{Creates a Bootstrap confidence interval for the output of a linear regression,
-using Rfast}
+directly solving matrix cross-product}
 \usage{
 boot_ci_fast_linear(df, formula, B = 100, conf.level = 0.9, cores = 2)
 }
@@ -23,5 +23,5 @@ a matrix where each row contains the lower and upper bounds of the confidence in
 }
 \description{
 Creates a Bootstrap confidence interval for the output of a linear regression,
-using Rfast
+directly solving matrix cross-product
 }

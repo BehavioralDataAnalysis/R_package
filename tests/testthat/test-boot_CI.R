@@ -79,7 +79,7 @@ test_that("boot_ci returns the right value when passed the mean function to appl
 })
 
 test_that("boot_ci returns the right value when passed the mean function to apply to a large dataset", {
-  skip_on_ci()
+  #skip_on_ci()
   CI <- boot_ci(df_large_num,
                 function(df) mean(df$x),
                 B = 20,

@@ -1,11 +1,11 @@
 #' Creates a Bootstrap confidence interval for the output of a function
 #'
 #' @param df data to use
-#' @param fct function or linear regression formula to run on the data
+#' @param fct function or regression formula to run on the data
 #' @param B number of Bootstrap sampling iterations to run
 #' @param conf.level confidence interval percentage to use
 #' @param cores the number of cores to use for parallel processing
-#' @return if the input is a function: a vector with two values, the lower and upper bounds of the confidence interval; otherwise, if the input is a linear regression formula, a matrix where each row contains the lower and upper bounds of the confidence interval for the corresponding regression coefficient
+#' @return if the input is a function: a vector with two values, the lower and upper bounds of the confidence interval; otherwise, if the input is a regression formula, a matrix where each row contains the lower and upper bounds of the confidence interval for the corresponding regression coefficient
 #' @import doParallel foreach dplyr parallel stringr
 #' @examples
 #' options(mc.cores = 2)
@@ -16,7 +16,7 @@
 #' boot_ci(df1, function(df) mean(df$x), cores = 2)
 #' @export
 
-boot_ci <- function(df, fct, regression_type = "linear", B = 100, conf.level = 0.90, cores = 2){
+boot_ci <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
 
   #Validating the inputs
   if(length(intersect(class(df), c("tbl_df", "tbl", "data.frame")))==0) stop("please provide data in  a data.frame or similar format")
@@ -81,80 +81,25 @@ boot_ci <- function(df, fct, regression_type = "linear", B = 100, conf.level = 0
   else if(is.character(fct)){
     formula <- fct # using alias for clarity
 
-    # varnames <- stringr::str_extract_all(formula, "([:alnum:]|_|\\.)+") |> unlist()
-    # y_name <- varnames[1]
-    # cnt_vals <- df |> select(all_of(y_name)) |> n_distinct()
-    # if(cnt_vals == 2L){
-    #   reg_type = 'logistic'
-    # } else if(cnt_vals > 2L){
-    #   reg_type = 'linear'
-    # } else {
-    #   stop("someting is wrong with the count of distinct values for the target variable")
-    # }
+    ## Determining the regression type based on the number of distinct values of the dependent variable
 
-    ### Linear regression
+    # Extracting the variable names
+    y_name <- formula |>
+      stringr::str_extract("^[^~]+") |>
+      stringr::str_trim()
+    if(!(y_name %in% colnames(df))) stop("the dependent variable in the formula doesn't appear in the data")
+
+    # Counting the number of distinct values
+    values_cnt <- df |>
+      dplyr::select(all_of(y_name)) |>
+      dplyr::n_distinct()
+    if(values_cnt == 2) {regression_type <- "logistic"} else {regression_type <- "linear"}
+
+    ## Linear regression
 
     if(regression_type == 'linear') {
       CI <- boot_ci_fast_linear(df = df, formula = formula, B = B,
                                 conf.level = conf.level, cores = cores)
-
-      ### OLD CODE IN CASE IT NEEDS TO BE REINSTATED
-      # ## Using sapply for small data size
-      # if(nrow(df) <= 5e5){
-      #   boot_mat <- sapply(1:B, function(x){
-      #     mod <- stats::lm(formula = fct,
-      #                      data    = slice_sample(df, n = nrow(df), replace = TRUE))
-      #     return(mod$coefficients)})
-      #
-      #   ordered_boot_mat <- apply(boot_mat, 1, sort, decreasing = FALSE)
-      #   lower_bound <- ordered_boot_mat[offset,]
-      #   upper_bound <- ordered_boot_mat[B+1-offset,]
-      #   CI <- cbind(lower_bound, upper_bound)
-      # }
-      # ## Running the Bootstrap loop with foreach, and doParallel as backend
-      # else {
-      #   # Validating dependencies
-      #   if (!requireNamespace("doParallel", quietly = TRUE)) {
-      #     stop("Package \"doParallel\" must be installed to use this function.", call. = FALSE)}
-      #
-      #   # Running the regression once through an anonymous function to get the names of the coefficients
-      #   coeff_names <- (function(dat) {
-      #     mod <- stats::lm(formula = fct, data = utils::head(dat))
-      #     names(mod$coefficients)})(df)
-      #
-      #   # Converting the regression formula to a function
-      #   reg_fun <- function(df){
-      #     mod <- stats::lm(formula = fct,
-      #                      data    = df)
-      #     res_mat <- matrix(data = mod$coefficients, ncol = 1)
-      #     return(res_mat)
-      #   }
-      #   N_coeffs = length(reg_fun(df))
-      #
-      #   # Detecting the number of cores if not provided by the user
-      #   if(missing(cores)){
-      #     cores <- parallel::detectCores() - 1
-      #   }
-      #   # Initializing the cluster
-      #   doParallel::registerDoParallel(cores = cores)
-      #   boot_mat <- matrix(data = NA, nrow = N_coeffs, ncol = B)
-      #   inner_df <- df # Creating a copy of the data to avoid side effects
-      #
-      #   boot_mat <- foreach::foreach(i=1:B,
-      #                                .combine='cbind',
-      #                                .packages = "dplyr",
-      #                                .inorder = FALSE) %dopar% {
-      #                                  sample_df <- dplyr::slice_sample(inner_df, n = nrow(inner_df), replace = TRUE)
-      #                                  reg_fun(sample_df)
-      #                                }
-      #   doParallel::stopImplicitCluster()
-      #
-      #   ordered_boot_mat <- apply(boot_mat, 1, sort, decreasing = FALSE)
-      #   lower_bound <- ordered_boot_mat[offset,]
-      #   upper_bound <- ordered_boot_mat[B+1-offset,]
-      #   CI <- cbind(lower_bound, upper_bound)
-      #   row.names(CI) <- coeff_names
-
     } else if (regression_type == 'logistic'){
 
       ## TODO: add code here

@@ -13,16 +13,22 @@
 boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores = 2){
 
   #Validating the inputs, without repeating conditions already checked by wrapper function
-  if(!is.character(formula)) stop("boot_ci_fast was not passed a regression formula")
+  if(!is.character(formula)) stop("boot_ci_fast_linear was not passed a regression formula")
   offset = round(B * (1 - conf.level) / 2)
 
   # Extracting the variable names
-  varnames <- stringr::str_extract_all(formula, "([:alnum:]|_|\\.)+") |> unlist()
-  y_name <- varnames[1]
-  X_names <- varnames[-1]
+  y_name <- formula |>
+    stringr::str_extract("^[^~]+") |>
+    stringr::str_trim()
+  if(!(y_name %in% colnames(df))) stop("the dependent variable in the formula doesn't appear in the data")
+
+  X_names <- formula |>
+    stringr::str_extract_all("(?<=[:symbol:])([:alnum:]|_|\\.)+") |> unlist()
+
+  varnames <- c(y_name, X_names)
 
   # Filtering data down to only the variables used
-  df <- df |> select(all_of(varnames))
+  df <- df |> dplyr::select(all_of(varnames))
 
   # Controlling for NA values in the variables that will be used
   if(any(is.na(df))) stop("the data provided contains NA values, please remove them first")
@@ -41,8 +47,6 @@ boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores =
       indices <- sample(Nrow, replace = TRUE)
       y <- y[indices]
       X <- X[indices, , drop = FALSE]
-      # mod_fast <- Rfast::lmfit(X, y)
-      # return(mod_fast$be)
       mod_cross <- as.vector(solve( crossprod(X), crossprod(X, y) ))
       return(mod_cross)
       })
@@ -52,7 +56,7 @@ boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores =
     upper_bound <- ordered_boot_mat[B+1-offset,]
     CI <- cbind(lower_bound, upper_bound)
     if(is.null(rownames(CI))){
-      rownames(CI) <- cbind("(Intercept)", X_names)
+      rownames(CI) <- c("(Intercept)", X_names)
     }
 
     ## TODO: calculate and return Achieved Significance Level here
