@@ -100,7 +100,10 @@ boot_ci <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
     if(regression_type == 'linear') {
       CI <- boot_ci_fast_linear(df = df, formula = formula, B = B,
                                 conf.level = conf.level, cores = cores)
-    } else if (regression_type == 'logistic'){
+    }
+
+    ## Logistic regression
+    else if (regression_type == 'logistic'){
 
       CI <- boot_ci_fast_logistic(df = df, formula = formula, B = B,
                                 conf.level = conf.level, cores = cores)
