@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 # Bootstrap Confidence Intervals
 
 ```{r setup}
-library(tidyverse)
+library(dplyr)
 library(BehavioralDataAnalysis)
 library(MASS)
 ```

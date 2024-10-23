@@ -80,36 +80,9 @@ boot_ci <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
   ### Second case: fct is a regression formula
   else if(is.character(fct)){
     formula <- fct # using alias for clarity
-
-    ## Determining the regression type based on the number of distinct values of the dependent variable
-
-    # Extracting the variable names
-    y_name <- formula |>
-      stringr::str_extract("^[^~]+") |>
-      stringr::str_trim()
-    if(!(y_name %in% colnames(df))) stop("the dependent variable in the formula doesn't appear in the data")
-
-    # Counting the number of distinct values
-    values_cnt <- df |>
-      dplyr::select(all_of(y_name)) |>
-      dplyr::n_distinct()
-    if(values_cnt == 2) {regression_type <- "logistic"} else {regression_type <- "linear"}
-
-    ## Linear regression
-
-    if(regression_type == 'linear') {
-      CI <- boot_ci_fast_linear(df = df, formula = formula, B = B,
-                                conf.level = conf.level, cores = cores)
-    }
-
-    ## Logistic regression
-    else if (regression_type == 'logistic'){
-
-      CI <- boot_ci_fast_logistic(df = df, formula = formula, B = B,
-                                conf.level = conf.level, cores = cores)
-      }
-
-  } else stop("the second argument of the function must be a function or a regression formula")
+    CI <- boot_ci_regression(df = df, formula = formula, B = B,
+                              conf.level = conf.level, cores = cores)
+    } else stop("the second argument of the function must be a function or a regression formula")
 
   return(CI)
 }
