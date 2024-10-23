@@ -23,7 +23,9 @@ boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores =
   if(!(y_name %in% colnames(df))) stop("the dependent variable in the formula doesn't appear in the data")
 
   X_names <- formula |>
-    stringr::str_extract_all("(?<=[:symbol:])([:alnum:]|_|\\.)+") |> unlist()
+    stringr::str_extract_all("(?<=[:symbol:]|[:blank:])([:alnum:]|_|\\.)+") |> unlist()
+
+  ## TODO: handle cases with "y~." formula
 
   varnames <- c(y_name, X_names)
 

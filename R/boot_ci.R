@@ -102,8 +102,8 @@ boot_ci <- function(df, fct, B = 100, conf.level = 0.90, cores = 2){
                                 conf.level = conf.level, cores = cores)
     } else if (regression_type == 'logistic'){
 
-      ## TODO: add code here
-
+      CI <- boot_ci_fast_logistic(df = df, formula = formula, B = B,
+                                conf.level = conf.level, cores = cores)
       }
 
   } else stop("the second argument of the function must be a function or a regression formula")

@@ -29,7 +29,8 @@ Imports:
     Rcpp,
     scales,
     stats,
-	stringr
+	stringr,
+    fastLogisticRegressionWrap
 Depends: 
     R (>= 4.3.0)
 LinkingTo: Rcpp
