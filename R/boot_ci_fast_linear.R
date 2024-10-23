@@ -16,16 +16,20 @@ boot_ci_fast_linear <- function(df, formula, B = 100, conf.level = 0.90, cores =
   if(!is.character(formula)) stop("boot_ci_fast_linear was not passed a regression formula")
   offset = round(B * (1 - conf.level) / 2)
 
-  # Extracting the variable names
+  # Extracting the dependent variable name
   y_name <- formula |>
     stringr::str_extract("^[^~]+") |>
     stringr::str_trim()
   if(!(y_name %in% colnames(df))) stop("the dependent variable in the formula doesn't appear in the data")
 
-  X_names <- formula |>
-    stringr::str_extract_all("(?<=[:symbol:]|[:blank:])([:alnum:]|_|\\.)+") |> unlist()
-
-  ## TODO: handle cases with "y~." formula
+  # Extracting predictor variable names
+  if(formula |> stringr::str_trim() |> stringr::str_ends("~\\.")){
+    X_names <- colnames(df)
+    X_names <- X_names[X_names != y_name] # Removing the dependent variable
+  } else {
+    X_names <- formula |>
+      stringr::str_extract_all("(?<=[:symbol:]|[:blank:])([:alnum:]|_|\\.)+") |> unlist()
+  }
 
   varnames <- c(y_name, X_names)
 

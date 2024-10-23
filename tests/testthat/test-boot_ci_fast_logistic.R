@@ -1,10 +1,9 @@
 test_that("boot_ci_fast_logistic returns the right value when passed a logistic regression formula
           to apply to the starwars dataset", {
   set.seed(1)
-  df <- starwars |> select(gender, mass, height) |> mutate(gender = factor(gender,
-                                                                           levels = c("masculine", "feminine"),
-                                                                           labels = c(1, 0)))
-  df <- df[complete.cases(df), ]
+  df <- starwars |> select(gender, mass, height) |>
+    na.omit() |>
+    mutate(gender = factor(gender, levels = c("masculine", "feminine"), labels = c(1, 0)))
   CI <- boot_ci_fast_logistic(df,
                 "gender~mass+height",
                 conf.level = 0.1)

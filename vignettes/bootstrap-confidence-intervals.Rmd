@@ -21,7 +21,9 @@ knitr::opts_chunk$set(
 # Bootstrap Confidence Intervals
 
 ```{r setup}
+library(tidyverse)
 library(BehavioralDataAnalysis)
+library(MASS)
 ```
 
 ## Introduction and basic use cases
@@ -35,7 +37,6 @@ When running data analyses, we're often interested in determining how accurate t
 The most common and general use case for `boot_ci()` is to build the confidence interval for a linear regression. Let's import the Boston housing price dataset from the MASS package:
 
 ```{r}
-library(MASS)
 dat <- MASS::Boston
 head(dat)
 
@@ -60,6 +61,27 @@ Under the hood, `boot_ci()` relies heavily on assumptions and conventions for th
 ```{r}
 set.seed(1)
 boot_ci(dat, formula, B = 200, conf.level = 0.80)
+```
+
+### Passing a logistic regression formula
+
+If the dependent variable in your formula only has two values (TRUE/FALSE, Y/N, or 1/0), `boot_ci()` will automatically run a logistic regression. Let's look for example at data about biopsies of breast tumor, also from the MASS package
+
+```{r}
+biopsy_dat <- MASS::biopsy |>
+  dplyr::select(-ID) |> # removing the ID column we won't use
+  na.omit() |> # removing all rows with NA's
+  mutate(class = factor(class, levels = c('benign', 'malignant'), labels = c(0, 1)))
+
+# Standard model
+log_mod <- glm("class~.", family= binomial(link = "logit"), data = biopsy_dat)
+summary(log_mod)
+```
+Let's now build the corresponding Bootstrap confidence intervals.
+
+```{r}
+formula <- "class~."
+boot_ci(biopsy_dat, formula, B = 400, conf.level = 0.95)
 ```
 
 
